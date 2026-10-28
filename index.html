@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Braille Trainer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #faf7fd;
+      color: #1c1b1f;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top App Bar */
+    .app-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background-color: #faf7fd;
+    }
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: #1c1b1f;
+      flex-grow: 1;
+      text-align: center;
+      margin-left: 150px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1c1b1f;
+    }
+
+    .icon-btn:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    /* Swipe Switch Button Styling */
+    .switch-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: #f2edf3;
+      border: 1px solid #d9cde3;
+      padding: 4px 8px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: #49454f;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    .switch-btn.active {
+      background-color: #e8def8;
+      color: #1d192b;
+      border-color: #6750a4;
+    }
+
+    .switch-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #938f99;
+    }
+
+    .switch-btn.active .switch-indicator {
+      background-color: #6750a4;
+    }
+
+    /* Main Container */
+    .main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Timer Display */
+    .timer {
+      font-size: 20px;
+      font-weight: 400;
+      color: #1c1b1f;
+      margin-top: 10px;
+      margin-bottom: 24px;
+      min-height: 28px;
+    }
+
+    /* Letters Grid */
+    .letters-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-bottom: auto;
+    }
+
+    .letter-card {
+      width: 44px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: #1c1b1f;
+      background-color: #f2edf3;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .letter-card.active {
+      background-color: #ffb3b3;
+      animation: pulse 1s infinite alternate ease-in-out;
+    }
+
+    .letter-card.completed {
+      background-color: #c8e6c9;
+    }
+
+    @keyframes pulse {
+      0% {
+        background-color: #ffcdd2;
+      }
+      100% {
+        background-color: #ef9a9a;
+      }
+    }
+
+    /* Braille Dot Grid */
+    .braille-container {
+      margin-bottom: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .braille-row {
+      display: flex;
+      gap: 20px;
+    }
+
+    .braille-dot {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      border: 3px solid #000;
+      background-color: transparent;
+      cursor: pointer;
+      transition: transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .braille-dot.selected {
+      background-color: #000000;
+    }
+
+    /* Bottom Sheet Modal & Central Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,0.4);
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 100;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 500px;
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.open .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-overlay.center-modal {
+      align-items: center;
+    }
+
+    .modal-overlay.center-modal .modal-content {
+      border-radius: 20px;
+      transform: scale(0.9);
+      max-width: 550px;
+      max-height: 85vh;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    }
+
+    .modal-overlay.center-modal.open .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .modal-divider {
+      height: 1px;
+      background-color: #e0e0e0;
+      margin-bottom: 16px;
+    }
+
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+    }
+
+    .cheat-sheet-content {
+      overflow-y: auto;
+    }
+
+    .alphabet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+      gap: 12px;
+      padding-bottom: 10px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .alphabet-card {
+      background-color: #faf7fd;
+      border: 1px solid #e0d8e8;
+      border-radius: 12px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .alphabet-card .char {
+      font-weight: 800;
+      font-size: 18px;
+      color: #1c1b1f;
+    }
+
+    .mini-braille {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+    }
+
+    .mini-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1.5px solid #000;
+      background-color: transparent;
+    }
+
+    .mini-dot.active {
+      background-color: #000;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="app-bar">
+    <div class="app-title" id="appTitle">Time Trial</div>
+    <div class="actions">
+      <!-- Przełącznik Swipe ON/OFF -->
+      <button class="switch-btn" id="swipeToggleBtn" title="Włącz/wyłącz pisanie przeciąganiem">
+        <span class="switch-indicator"></span>
+        <span>SWIPE</span>
+      </button>
+      <!-- Przycisk Ściągawki -->
+      <button class="icon-btn" id="cheatSheetBtn" title="Alfabet Braille'a">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+      </button>
+      <!-- Przycisk Przełączania Trybów -->
+      <button class="icon-btn" id="toggleModeBtn" title="Przełącz tryb">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 7 4 4 20 4 20 7"></polyline>
+          <line x1="9" y1="20" x2="15" y2="20"></line>
+          <line x1="12" y1="4" x2="12" y2="20"></line>
+        </svg>
+      </button>
+      <!-- Przycisk Historii Wyników -->
+      <button class="icon-btn" id="historyBtn" title="Historia wyników">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Interface -->
+  <main class="main-container">
+    <div class="timer" id="timerDisplay">0.0s</div>
+
+    <div class="letters-wrap" id="lettersContainer"></div>
+
+    <!-- Braille Pad (3x2 Grid) -->
+    <div class="braille-container" id="brailleContainer">
+      <div class="braille-row">
+        <div class="braille-dot" data-dot="1"></div>
+        <div class="braille-dot" data-dot="4"></div>
+      </div>
+      <div class="braille-row">
+        <div class="braille-dot" data-dot="2"></div>
+        <div class="braille-dot" data-dot="5"></div>
+      </div>
+      <div class="braille-row">
+        <div class="braille-dot" data-dot="3"></div>
+        <div class="braille-dot" data-dot="6"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Score History Sheet -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Score History</div>
+        <button class="close-btn" id="closeHistoryBtn">&times;</button>
+      </div>
+      <div class="modal-divider"></div>
+      <ul class="history-list" id="historyList"></ul>
+    </div>
+  </div>
+
+  <!-- Braille Cheat Sheet Modal (Central Widget) -->
+  <div class="modal-overlay center-modal" id="cheatSheetModal">
+    <div class="modal-content cheat-sheet-content">
+      <div class="modal-header">
+        <div class="modal-title">Braille Alphabet</div>
+        <button class="close-btn" id="closeCheatSheetBtn">&times;</button>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="alphabet-grid" id="alphabetGrid"></div>
+    </div>
+  </div>
+
+  <script>
+    const BRAILLE_ALPHABET = {
+      'A': [1], 'B': [1, 2], 'C': [1, 4], 'D': [1, 4, 5], 'E': [1, 5],
+      'F': [1, 2, 4], 'G': [1, 2, 4, 5], 'H': [1, 2, 5], 'I': [2, 4],
+      'J': [2, 4, 5], 'K': [1, 3], 'L': [1, 2, 3], 'M': [1, 3, 4],
+      'N': [1, 3, 4, 5], 'O': [1, 3, 5], 'P': [1, 2, 3, 4],
+      'Q': [1, 2, 3, 4, 5], 'R': [1, 2, 3, 5], 'S': [2, 3, 4],
+      'T': [2, 3, 4, 5], 'U': [1, 3, 6], 'V': [1, 2, 3, 6],
+      'W': [2, 4, 5, 6], 'X': [1, 3, 4, 6], 'Y': [1, 3, 4, 5, 6],
+      'Z': [1, 3, 5, 6]
+    };
+
+    const COMMON_ENGLISH_NOUNS = [
+      "ACORN", "ACTOR", "ACTRESS", "ADDITION", "ADDRESS", "ADVENTURE", "ADVICE", "AIR", 
+      "AIRPORT", "ALARM", "ALBUM", "ALLIGATOR", "ALPHABET", "AMBULANCE", "ANCHOR", "ANGEL", 
+      "ANGER", "ANGLE", "ANIMAL", "ANKLE", "ANSWER", "ANT", "ANTELOPE", "ANTIQUE", 
+      "APARTMENT", "APOLOGY", "APPLE", "APRON", "AQUARIUM", "ARCH", "ARCHITECT", "ARGUMENT", 
+      "ARM", "ARMOR", "ARMY", "ART", "ARTIST", "ASH", "ASTRONAUT", "ATHLETE", 
+      "ATLANTIS", "ATLAS", "ATTIC", "AUDIENCE", "AUTHOR", "AUTUMN", "AVOCADO", "AWARD", 
+      "BABOON", "BABY", "BACK", "BACKPACK", "BACON", "BADGE", "BAG", "BAGEL", 
+      "BAKERY", "BALANCE", "BALL", "BALLERINA", "BALLOON", "BAMBOO", "BANANA", "BAND", 
+      "BANDAGE", "BANJO", "BANK", "BARBER", "BARGAYN", "BARK", "BARN", "BARREL", 
+      "BASEBALL", "BASEMENT", "BASKET", "BASKETBALL", "BAT", "BATH", "BATHROOM", "BATTERY", 
+      "BEACH", "BEAK", "BEAN", "BEAR", "BEARD", "BEAST", "BEAT", "BEAUTY", 
+      "BEAVER", "BED", "BEDROOM", "BEE", "BEEF", "BEETLE", "BEGGAR", "BEHAVIOR", 
+      "BELL", "BELT", "BENCH", "BERRY", "BICYCLE", "BIKE", "BILL", "BIN", 
+      "BIRD", "BIRTHDAY", "BISCUIT", "BISON", "BLADE", "BLANKET", "BLAST", "BLENDER", 
+      "BLIZZARD", "BLOCK", "BLOOD", "BLOUSE", "BOARD", "BOAT", "BODY", "BOLT", 
+      "BOMB", "BONE", "BONFIRE", "BOOK", "BOOKCASE", "BOOKSTORE", "BOOT", "BORDER", 
+      "BOTTLE", "BOTTOM", "BOULDER", "BOW", "BOWL", "BOWLING", "BOX", "BOXER", 
+      "BOY", "BRACELET", "BRAIN", "BRANCH", "BRASS", "BREAD", "BREAK", "BREAKFAST", 
+      "BRICK", "BRIDE", "BRIDGE", "BROCCOLI", "BROOK", "BROOM", "BROTHER", "BRUSH", 
+      "BUBBLE", "BUCKET", "BUCKLE", "BUD", "BUFFALO", "BUG", "BUILDING", "BULB", 
+      "BULL", "BULLDOG", "BULLET", "BUMBLEBEE", "BUN", "BUNCH", "BURGER", "BUS", 
+      "BUSH", "BUSINESS", "BUTCHER", "BUTTER", "BUTTERFLY", "BUTTON", "CAB", "CABBAGE", 
+      "CABIN", "CABINET", "CABLE", "CACTUS", "CAGE", "CAKE", "CALCULATOR", "CALENDAR", 
+      "CALF", "CAMEL", "CAMERA", "CAMP", "CAMPER", "CAMPFIRE", "CAN", "CANAL", 
+      "CANARY", "CANDLE", "CANDY", "CANE", "CANNON", "CANOE", "CANYON", "CAP", 
+      "CAPE", "CAPTAIN", "CAR", "CARAVAN", "CARD", "CARDIGAN", "CARIBOU", "CARPENTER", 
+      "CARPET", "CARROT", "CART", "CARTOON", "CASTLE", "CAT", "CATERPILLAR", "CATHEDRAL", 
+      "CAVE", "CAVIAR", "CEILING", "CELERY", "CELL", "CELLO", "CEMENT", "CEMETERY", 
+      "CENT", "CEREAL", "CHAIN", "CHAIR", "CHALK", "CHAMELEON", "CHAMPION", "CHANDELIER", 
+      "CHANGE", "CHANNEL", "CHAPEL", "CHAPTER", "CHARCOAL", "CHARIOT", "CHEESE", "CHEETAH", 
+      "CHEF", "CHERRY", "CHESS", "CHEST", "CHICK", "CHICKEN", "CHILD", "CHIMNEY", 
+      "CHIMPANZEE", "CHIN", "CHIP", "CHIPMUNK", "CHOCOLATE", "CHOIR", "CHOPSTICKS", "CHURCH", 
+      "CINEMA", "CIRCLE", "CIRCUS", "CITY", "CLAM", "CLASS", "CLASSROOM", "CLAW", 
+      "CLAY", "CLEANER", "CLIFF", "CLIMBER", "CLOAK", "CLOCK", "CLOSET", "CLOTH", 
+      "CLOUD", "CLOVER", "CLOWN", "CLUB", "COACH", "COAL", "COAST", "COAT", 
+      "COBRA", "COBWEB", "COCKATOO", "COCKROACH", "COCOA", "COCONUT", "COFFEE", "COIN", 
+      "COLLEGE", "COLT", "COMB", "COMET", "COMFORT", "COMIC", "COMMANDER", "COMPANY", 
+      "COMPASS", "COMPOSER", "COMPUTER", "CONCERT", "CONE", "CONGA", "CONTAINER", "CONTINENT", 
+      "COOK", "COOKIE", "COPPER", "CORAL", "CORD", "CORN", "CORNER", "COSTUME", 
+      "COTTAGE", "COTTON", "COUCH", "COUUGAR", "COUNSELOR", "COUNT", "COUNTRY", "COURT", 
+      "COUSIN", "COVER", "COW", "COWBOY", "COYOTE", "CRAB", "CRADLE", "CRAFT", 
+      "CRANE", "CRATER", "CRAYON", "CREAM", "CREEK", "CRICKET", "CROCODILE", "CROW", 
+      "CROWN", "CRUISER", "CRUMB", "CRYSTAL", "CUB", "CUBE", "CUCUMBER", "CUP", 
+      "CUPBOARD", "CUPCAKE", "CURTAIN", "CUSHION", "CUSTOMER", "CYLINDER", "CYMBAL", "DAFFODIL", 
+      "DAGGER", "DAIRY", "DAISY", "DALE", "DAM", "DANCE", "DANCER", "DANDELION", 
+      "DART", "DATABASE", "DATE", "DAUGHTER", "DAY", "DAYLIGHT", "DEER", "DESERT", 
+      "DESK", "DESSERT", "DETECTIVE", "DIAMOND", "DIARY", "DICET", "DICTIONARY", "DINNER", 
+      "DINOSAUR", "DIPLOMA", "DIRECTOR", "DIRT", "DISC", "DISCO", "DISH", "DISPLAY", 
+      "DISTANCE", "DITCH", "DIVER", "DOCK", "DOCTOR", "DOCUMENT", "DOG", "DOLL", 
+      "DOLLAR", "DOLPHIN", "DONKEY", "DOOR", "DOORKNOB", "DOORMAT", "DOUGH", "DOUGHNUT", 
+      "DOVE", "DRAGON", "DRAGONFLY", "DRAIN", "DRAWER", "DREAM", "DRESS", "DRESSER", 
+      "DRILL", "DRINK", "DRIVER", "DROP", "DRUM", "DRUMMER", "DUCK", "DUCKLING", 
+      "DUNE", "DUNGEON", "DUST", "EAGLE", "EAR", "EARTH", "EARTHQUAKE", "EASEL", 
+      "ECHO", "ECLIPSE", "EGG", "EGGPLANT", "ELBOW", "ELECTRICITY", "ELEPHANT", "ELEVATOR", 
+      "ELF", "ELK", "EMERALD", "EMPEROR", "EMPLOYEE", "ENGINE", "ENGINEER", "ENVELOPE", 
+      "EQUIPMENT", "ERASER", "ESCALATOR", "ESTATE", "EXERCISE", "EXIT", "EXPERIMENT", "EYE", 
+      "EYEGLASSES", "FABRIC", "FACE", "FACTORY", "FAIRY", "FALCON", "FALL", "FAMILY", 
+      "FAN", "FARM", "FARMER", "FATHER", "FAUCET", "FEATHER", "FENCE", "FERN", 
+      "FERRY", "FIELD", "FIG", "FIGHTER", "FIGURE", "FILE", "FILM", "FIN", 
+      "FINGER", "FINGERPRINT", "FIR", "FIRE", "FIREFLY", "FIREMAN", "FIREPLACE", "FIREWORKS", 
+      "FISH", "FISHERMAN", "FLAG", "FLAME", "FLAMINGO", "FLASHLIGHT", "FLEA", "FLIGHT", 
+      "FLIPPER", "FLOOD", "FLOOR", "FLOUR", "FLOWER", "FLUTE", "FLY", "FOAM", 
+      "FOG", "FOLDER", "FOOD", "FOOT", "FOOTBALL", "FOREST", "FORK", "FORT", 
+      "FOUNTAIN", "FOX", "FRAME", "FREEZER", "FRIDGE", "FRIEND", "FROG", "FRUIT", 
+      "FUDGE", "FUEL", "FURNACE", "FURNITURE", "GALAXY", "GALLERY", "GAME", "GARAGE", 
+      "GARDEN", "GARDENER", "GARLIC", "GAS", "GASOLINE", "GATE", "GAZELL", "GEAR", 
+      "GEESE", "GEM", "GENIE", "GHOST", "GIANT", "GIFT", "GIRAFFE", "GIRL", 
+      "GLACIER", "GLASS", "GLASSES", "GLOBE", "GLOVE", "GLUE", "GNOME", "GOAT", 
+      "GOBLET", "GOLD", "GOLDFISH", "GOLF", "GONG", "GOOSE", "GORILLA", "GOWN", 
+      "GRAIN", "GRANDFATHER", "GRANDMOTHER", "GRAPE", "GRAPEFRUIT", "GRASS", "GRASSHOPPER", "GRAVE", 
+      "GRAVY", "GREENHOUSE", "GRID", "GRILL", "GROCERY", "GROUND", "GROUP", "GUARD", 
+      "GUITAR", "GULL", "GUM", "GYM", "GYMNAST", "HAIR", "HAIRCUT", "HALL", 
+      "HAM", "HAMBURGER", "HAMMER", "HAMSTER", "HAND", "HANDBAG", "HANDLE", "HARBOR", 
+      "HARMONICA", "HARP", "HARVEST", "HAT", "HAWK", "HAY", "HEAD", "HEADBAND", 
+      "HEADPHONES", "HEART", "HEATER", "HEAVEN", "HEDGE", "HEDGEHOG", "HELICOPTER", "HELMET", 
+      "HEN", "HERB", "HERO", "HERON", "HIGHWAY", "HILL", "HIPPOPOTAMUS", "HISTORY", 
+      "HIVE", "HOBBY", "HOCKEY", "HOE", "HOG", "HOLE", "HOLLY", "HOME", 
+      "HONEY", "HONEYBEE", "HOOD", "HOOK", "HORIZON", "HORN", "HORNET", "HORSE", 
+      "HOSPITAL", "HOST", "HOTEL", "HOUR", "HOUSE", "HUMMINGBIRD", "HUNTER", "HURRICANE", 
+      "HYENA", "ICE", "ICEBERG", "ICEBOX", "ICEBERG", "ICICLE", "IGLOO", "IMAGE", 
+      "INK", "INSECT", "INSTRUMENT", "INSTRUCTOR", "ISLAND", "IVORY", "IVY", "JACKET", 
+      "JAGUAR", "JAM", "JAR", "JAVELIN", "JAW", "JEANS", "JEEP", "JELLY", 
+      "JELLYFISH", "JET", "JEWEL", "JEWELRY", "JOURNAL", "JOURNEY", "JUDGE", "JUG", 
+      "JUICE", "JUMPER", "JUNGLE", "KANGAROO", "KATYDID", "KAYAK", "KETTLE", "KEY", 
+      "KEYBOARD", "KID", "KING", "KINGFISHER", "KITCHEN", "KITE", "KITTEN", "KIWI", 
+      "KNEE", "KNIFE", "KNIGHT", "KNOT", "KOALA", "LABORATORY", "LACE", "LADDER", 
+      "LADYBUG", "LAKE", "LAMB", "LAMP", "LAMPPOST", "LAND", "LANDSCAPE", "LANTERN", 
+      "LAPTOP", "LARK", "LASAGNA", "LASER", "LATCH", "LAVA", "LAWN", "LIME", 
+      "LEAF", "LEATHER", "LEMON", "LEMONADE", "LEMUR", "LEOPARD", "LETTER", "LETTUCE", 
+      "LIBRARY", "LICORICE", "LID", "LIFE", "LIGHT", "LIGHTHOUSE", "LIGHTNING", "LILAC", 
+      "LILY", "LIME", "LION", "LIP", "LIZARD", "LLAMA", "LOBSTER", "LOCK", 
+      "LOCKET", "LOCOMOTIVE", "LOG", "LOLLIPOP", "LUGGAGE", "LUMBER", "UNCH", "LUNCHBOX", 
+      "LUTE", "LYNX", "MACARONI", "MACHINE", "MAGAZINE", "MAGICIAN", "MAGNET", "MAGPIE", 
+      "MAIL", "MAILBOX", "MAZE", "MEADOW", "MEAL", "MEAT", "MEDAL", "MEDICINE", 
+      "MELON", "MELODY", "MEMBER", "MEMORY", "MENU", "MERMAID", "METAL", "METEOR", 
+      "MICROSCOPE", "MILK", "MILKSHAKE", "MILL", "MIME", "MINE", "MINERAL", "MINK", 
+      "MINT", "MIRROR", "MISSILE", "MIST", "MITTEN", "MOAT", "MODEL", "MONEY", 
+      "MONKEY", "MONSTER", "MONUMENT", "MOON", "MOOSE", "MOP", "MORNING", "MOSQUITO", 
+      "MOTH", "MOTHER", "MOTOR", "MOTORCYCLE", "MOUNTAIN", "MOUSE", "MOUSTACHE", "MOUTH", 
+      "MUD", "MUFFIN", "MUG", "MULE", "MUMMY", "MUSCLE", "MUSEUM", "MUSHROOM", 
+      "MUSIC", "MUSICIAN", "MUSTARD", "NAIL", "NAPKIN", "NECK", "NECKLACE", "NEEDLE", 
+      "NEST", "NET", "NEWSPAPER", "NIGHT", "NIGHTINGALE", "NINJA", "NOODLE", "NOSE", 
+      "NOTE", "NOTEBOOK", "NUMERAL", "NURSE", "NUT", "NUTMEG", "OAK", "OAR", 
+      "OASIS", "OATMEAL", "OCEAN", "OCTOPUS", "OFFICE", "OIL", "OLIVE", "OMELET", 
+      "ONION", "OPERA", "ORANGE", "ORCHARD", "ORCHESTRA", "ORCHID", "ORGAN", "OSTRICH", 
+      "OTTER", "OVEN", "OWL", "OX", "OYSTER", "PACKAGE", "PAD", "PADDLE", 
+      "PAGE", "PAGODA", "PAIL", "PAINT", "PAINTER", "PAINTING", "PALACE", "PALM", 
+      "PAN", "PANDA", "PANTHER", "PANTS", "PAPER", "PARACHUTE", "PARADE", "PARROT", 
+      "PARSLEY", "PASSENGER", "PASTA", "PASTRY", "PATH", "PAW", "PEACH", "PEACOCKS", 
+      "PEANUT", "PEAR", "PEARL", "PEASANT", "PEBBLE", "PELICAN", "PEN", "PENCIL", 
+      "PENGUIN", "PENNY", "PEPPER", "PERFUME", "PERSON", "PET", "PETAL", "PHANTOM", 
+      "PHEASANT", "PHONE", "PHOTO", "PIANO", "PICKLE", "PIE", "PIG", "PIGEON", 
+      "PILLOW", "PILOT", "PIN", "PINE", "PINEAPPLE", "PIPE", "PIRATE", "PISTOL", 
+      "PITCHER", "PIZZA", "PLANET", "PLANK", "PLANT", "PLATE", "PLATFORM", "PLATYPUS", 
+      "PLAYGROUND", "PLUM", "PLUMBER", "POCKET", "POEM", "POET", "POINT", "POISON", 
+      "POLE", "POLICE", "POND", "PONY", "POOL", "POPCORN", "PORCUPINE", "PORT", 
+      "PORTRAIT", "POST", "POSTCARD", "POSTMAN", "POT", "POTATO", "POTTERY", "POULTRY", 
+      "POWER", "PRAIRIE", "PRAWN", "PRESIDENT", "PRETZEL", "PRINCE", "PRINCESS", "PRINTER", 
+      "PRISM", "PRISON", "PRIZE", "PUDDING", "PUDDLE", "PUFFIN", "PULLEY", "PUMA", 
+      "PUMP", "PUMPKIN", "PUPPET", "PUPPY", "PURSE", "PYRAMID", "PYTHON", "QUAIL", 
+      "QUEEN", "QUILL", "QUILT", "RABBIT", "RACCOON", "RACE", "RACKET", "RADAR", 
+      "RADIO", "RADISH", "RAFT", "RAG", "RAIL", "RAILROAD", "RAIN", "RAINBOW", 
+      "RAKE", "RAM", "RANCH", "RASPBERRY", "RAT", "RAVEN", "RAY", "RAZOR", 
+      "RECIPE", "RECORD", "REDWOOD", "REEF", "REINITEER", "REPTILE", "RHINO", "RIBBON", 
+      "RICE", "RIDER", "RIDGE", "RIFLE", "RING", "RINK", "RIVER", "ROAD", 
+      "ROBOT", "ROCK", "ROCKET", "ROOSTER", "ROPE", "ROSE", "RUBY", "RUG", 
+      "RULER", "RUNNER", "SADDLE", "SAIL", "SAILOR", "SALAD", "SALMON", "SALT", 
+      "SAND", "SANDAL", "SANDWICH", "SAPPHIRE", "SARDINE", "SATELLITE", "SAUCE", "SAUSAGE", 
+      "SAW", "SAXOPHONE", "SCARECROW", "SCARF", "SCENE", "SCHOOL", "SCIENTIST", "SCISSORS", 
+      "SCOOTER", "SCORPION", "SCOUT", "SCREEN", "SCREW", "SCULPTURE", "SEA", "SEAGULL", 
+      "SEAHORSE", "SEAL", "SEASHELL", "SEASON", "SEAT", "SEAWEED", "SEED", "SHADOW", 
+      "SHARK", "SHED", "SHEEP", "SHEET", "SHELL", "SHELTER", "SHERIFF", "SHIELD", 
+      "SHIP", "SHIRT", "SHOE", "SHOP", "SHORE", "SHOVEL", "SHOWER", "SHRIMP", 
+      "SHRUB", "SIDEWALK", "SILK", "SILO", "SILVER", "SINK", "SIREN", "SKATE", 
+      "SKATEBOARD", "SKELETON", "SKI", "SKIN", "SKIRT", "SKUNK", "SKY", "SKYSCRAPER", 
+      "SLED", "SLEEVE", "SLIDE", "SLIPPER", "SLOTH", "SLUG", "SNAIL", "SNAKE", 
+      "SNEAKER", "SNOW", "SNOWFLAKE", "SNOWMAN", "SOAP", "SOCK", "SODA", "SOFA", 
+      "SOIL", "SOLDIER", "SON", "SONG", "SOUP", "SPARROW", "SPATULA", "SPEAR", 
+      "SPECTACLES", "SPHERE", "SPICE", "SPIDER", "SPINACH", "SPONGE", "SPOON", "SPRING", 
+      "SPROUT", "SPY", "SQUARE", "SQUID", "SQUIRREL", "STADIUM", "STAGE", "STAIRS", 
+      "STAMP", "STAR", "STARFISH", "STATION", "STATUE", "STEAK", "STEAM", "STEEL", 
+      "STEERING", "STEM", "STEP", "STETHOSCOPE", "STICK", "STICKER", "STORM", "STOVE", 
+      "STRAW", "STRAWBERRY", "STREAM", "STREET", "STRING", "STUDENT", "STUDIO", "SUBMARINE", 
+      "SUBWAY", "SUGAR", "SUIT", "SUITCASE", "SUN", "SUNFLOWER", "SUNGLASSES", "SUNRISE", 
+      "SUNSET", "SUPERMARKET", "SWAN", "SWEATER", "SWIMMING", "SWING", "SWORD", "SYRUP", 
+      "TABLE", "TABLET", "TADPOLE", "TAIL", "TALENT", "TANK", "TANKER", "TAPE", 
+      "TAPESTRY", "TARGET", "TAXI", "TEA", "TEAPOT", "TEACHER", "TEAM", "TELESCOPE", 
+      "TELEVISION", "TEMPLE", "TENT", "TENTACLE", "TEXTBOOK", "THEATER", "THERMOMETER", "THIMBLE", 
+      "THRONE", "THUMB", "THUNDER", "TIAERA", "TICKET", "TIGER", "TILE", "TIMBER", 
+      "TIME", "TIMER", "TIN", "TOAD", "TOAST", "TOASTER", "TOE", "TOMATO", 
+      "TOMB", "TONGUE", "TOOL", "TOOTH", "TOOTHBRUSH", "TOOTHPASTE", "TORCH", "TORNADO", 
+      "TORPEDO", "TORTOISE", "TOWER", "TOWN", "TOY", "TRACTOR", "TRAIN", "TRAMPOLINE", 
+      "TRAY", "TREE", "TRIANGLE", "TRICYCLE", "TROPHY", "TRUCK", "TRUMPET", "TRUNK", 
+      "TUBE", "TULIP", "TUNA", "TUNNEL", "TURBAN", "TURKEY", "TURTLE", "TUXEDO", 
+      "TWIG", "TWIN", "TYPER", "TYPHOON", "UMBRELLA", "UNICORN", "UNIFORM", "UNIVERSE", 
+      "UNIVERSITY", "VACUUM", "VALLEY", "VAMPIRE", "VAN", "VANILLA", "VASE", "VEGETABLE", 
+      "VEHICLE", "VELVET", "VENT", "VEST", "VIOLIN", "VOLCANO", "VOLLEYBALL", "VULTURE", 
+      "WAFFER", "WAGON", "WALL", "WALRUS", "WALNUT", "WARDROBE", "WARRIOR", "WASP", 
+      "WATCH", "WATER", "WATERFALL", "WATERMELON", "WAVE", "WAX", "WEB", "WELL", 
+      "WHALE", "WHEAT", "WHEEL", "WHISTLE", "WIND", "WINDMILL", "WINDOW", "WINE", 
+      "WING", "WINTER", "WIRE", "WITCH", "WOLF", "WOOD", "WOODPECKER", "WOOL", 
+      "WORKER", "WORM", "WREATH", "WRENCH", "WRIST", "XYLOPHONE", "YACHT", "YAK", 
+      "YARN", "YETI", "YOGURT", "YOKE", "YOLK", "ZEBRA", "ZERO", "ZIPPER", "ZOO"
+    ];
+
+    let isTimeTrialMode = true;
+    let currentTask = "";
+    let currentIndex = 0;
+    let selectedDots = new Set();
+    let history = [];
+    let bestTime = null;
+
+    let startTime = null;
+    let timerInterval = null;
+    let timerRunning = false;
+    let isMouseDown = false;
+    let isSwipeEnabled = true; // Domyślnie włączone
+
+    const appTitle = document.getElementById('appTitle');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const lettersContainer = document.getElementById('lettersContainer');
+    const dotElements = document.querySelectorAll('.braille-dot');
+    const toggleModeBtn = document.getElementById('toggleModeBtn');
+    const historyBtn = document.getElementById('historyBtn');
+    const historyModal = document.getElementById('historyModal');
+    const historyList = document.getElementById('historyList');
+    const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+
+    const cheatSheetBtn = document.getElementById('cheatSheetBtn');
+    const cheatSheetModal = document.getElementById('cheatSheetModal');
+    const closeCheatSheetBtn = document.getElementById('closeCheatSheetBtn');
+    const alphabetGrid = document.getElementById('alphabetGrid');
+    const brailleContainer = document.getElementById('brailleContainer');
+    const swipeToggleBtn = document.getElementById('swipeToggleBtn');
+
+    function getRandomNoun() {
+      return COMMON_ENGLISH_NOUNS[Math.floor(Math.random() * COMMON_ENGLISH_NOUNS.length)];
+    }
+
+    function init() {
+      setupEventListeners();
+      buildAlphabetCheatSheet();
+      loadNewTask();
+    }
+
+    function setupEventListeners() {
+      // Przycisk przełącznika Swipe ON/OFF
+      swipeToggleBtn.addEventListener('click', () => {
+        isSwipeEnabled = !isSwipeEnabled;
+        if (isSwipeEnabled) {
+          swipeToggleBtn.classList.add('active');
+        } else {
+          swipeToggleBtn.classList.remove('active');
+        }
+      });
+      // Stan początkowy: włączone
+      swipeToggleBtn.classList.add('active');
+
+      toggleModeBtn.addEventListener('click', () => {
+        isTimeTrialMode = !isTimeTrialMode;
+        appTitle.textContent = isTimeTrialMode ? 'Time Trial' : 'Braille Practice';
+        historyBtn.style.display = isTimeTrialMode ? 'flex' : 'none';
+        timerDisplay.style.visibility = isTimeTrialMode ? 'visible' : 'hidden';
+        stopTimer();
+        loadNewTask();
+      });
+
+      historyBtn.addEventListener('click', showHistory);
+      closeHistoryBtn.addEventListener('click', () => historyModal.classList.remove('open'));
+
+      cheatSheetBtn.addEventListener('click', () => cheatSheetModal.classList.add('open'));
+      closeCheatSheetBtn.addEventListener('click', () => cheatSheetModal.classList.remove('open'));
+
+      historyModal.addEventListener('click', (e) => {
+        if (e.target === historyModal) historyModal.classList.remove('open');
+      });
+
+      cheatSheetModal.addEventListener('click', (e) => {
+        if (e.target === cheatSheetModal) cheatSheetModal.classList.remove('open');
+      });
+
+      window.addEventListener('mousedown', () => { isMouseDown = true; });
+      window.addEventListener('mouseup', () => { isMouseDown = false; });
+
+      dotElements.forEach(dot => {
+        dot.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          toggleDotFromElement(dot);
+        });
+
+        dot.addEventListener('mouseenter', () => {
+          if (isSwipeEnabled && isMouseDown) {
+            toggleDotFromElement(dot);
+          }
+        });
+
+        dot.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          toggleDotFromElement(dot);
+        }, { passive: false });
+      });
+
+      brailleContainer.addEventListener('touchmove', (e) => {
+        if (!isSwipeEnabled) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (targetElement && targetElement.classList.contains('braille-dot')) {
+          toggleDotFromElement(targetElement);
+        }
+      }, { passive: false });
+    }
+
+    function toggleDotFromElement(dotEl) {
+      const dotVal = parseInt(dotEl.getAttribute('data-dot'));
+      
+      if (isTimeTrialMode && !timerRunning && currentIndex === 0) {
+        startTimer();
+      }
+
+      if (selectedDots.has(dotVal)) {
+        selectedDots.delete(dotVal);
+      } else {
+        selectedDots.add(dotVal);
+      }
+
+      updateDotsUI();
+      checkAnswer();
+    }
+
+    function buildAlphabetCheatSheet() {
+      alphabetGrid.innerHTML = '';
+      Object.keys(BRAILLE_ALPHABET).forEach(char => {
+        const dots = BRAILLE_ALPHABET[char];
+        const card = document.createElement('div');
+        card.className = 'alphabet-card';
+
+        let miniBrailleHtml = '<div class="mini-braille">';
+        const dotPositions = [1, 4, 2, 5, 3, 6];
+        dotPositions.forEach(p => {
+          const isActive = dots.includes(p) ? 'active' : '';
+          miniBrailleHtml += `<div class="mini-dot ${isActive}"></div>`;
+        });
+        miniBrailleHtml += '</div>';
+
+        card.innerHTML = `<div class="char">${char}</div>${miniBrailleHtml}`;
+        alphabetGrid.appendChild(card);
+      });
+    }
+
+    function loadNewTask() {
+      selectedDots.clear();
+      currentIndex = 0;
+      updateDotsUI();
+
+      if (isTimeTrialMode) {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        for (let i = letters.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [letters[i], letters[j]] = [letters[j], letters[i]];
+        }
+        currentTask = letters.slice(0, 10).join('');
+        stopTimer();
+        timerDisplay.textContent = '0.0s';
+      } else {
+        currentTask = getRandomNoun();
+      }
+
+      renderLetters();
+    }
+
+    function renderLetters() {
+      lettersContainer.innerHTML = '';
+      for (let i = 0; i < currentTask.length; i++) {
+        const card = document.createElement('div');
+        card.className = 'letter-card';
+        if (i === currentIndex) {
+          card.classList.add('active');
+        } else if (i < currentIndex) {
+          card.classList.add('completed');
+        }
+        card.textContent = currentTask[i];
+        lettersContainer.appendChild(card);
+      }
+    }
+
+    function updateDotsUI() {
+      dotElements.forEach(dot => {
+        const val = parseInt(dot.getAttribute('data-dot'));
+        if (selectedDots.has(val)) {
+          dot.classList.add('selected');
+        } else {
+          dot.classList.remove('selected');
+        }
+      });
+    }
+
+    function checkAnswer() {
+      const targetLetter = currentTask[currentIndex];
+      const targetDots = BRAILLE_ALPHABET[targetLetter] || [];
+
+      if (setsEqual(selectedDots, new Set(targetDots))) {
+        selectedDots.clear();
+        updateDotsUI();
+        currentIndex++;
+
+        if (currentIndex >= currentTask.length) {
+          if (isTimeTrialMode) {
+            stopTimer();
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+            addResult(parseFloat(elapsed));
+            setTimeout(() => {
+              loadNewTask();
+            }, 200);
+          } else {
+            setTimeout(() => {
+              loadNewTask();
+            }, 200);
+          }
+        } else {
+          renderLetters();
+        }
+      }
+    }
+
+    function setsEqual(setA, setB) {
+      if (setA.size !== setB.size) return false;
+      for (let item of setA) {
+        if (!setB.has(item)) return false;
+      }
+      return true;
+    }
+
+    function startTimer() {
+      timerRunning = true;
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const elapsed = (Date.now() - startTime) / 1000;
+        timerDisplay.textContent = `${elapsed.toFixed(1)}s`;
+      }, 100);
+    }
+
+    function stopTimer() {
+      timerRunning = false;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function addResult(time) {
+      history.unshift(time);
+      if (history.length > 5) history = history.slice(0, 5);
+      if (bestTime === null || time < bestTime) bestTime = time;
+    }
+
+    function showHistory() {
+      historyList.innerHTML = '';
+
+      const bestItem = document.createElement('li');
+      bestItem.className = 'history-item';
+      bestItem.innerHTML = `⭐ <strong>Best:</strong> ${bestTime !== null ? bestTime.toFixed(2) + 's' : '-'}`;
+      historyList.appendChild(bestItem);
+
+      history.forEach(t => {
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        li.innerHTML = `⏱️ ${t.toFixed(2)}s`;
+        historyList.appendChild(li);
+      });
+
+      historyModal.classList.add('open');
+    }
+
+    init();
+  </script>
+</body>
+</html>
