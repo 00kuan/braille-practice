@@ -5,6 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>braille practice</title>
   <style>
+    :root {
+      --bg-color: #faf7fd;
+      --text-color: #1c1b1f;
+      --card-bg: #ffffff;
+      --card-border: #e0d8e8;
+      --btn-bg: #f2edf3;
+      --btn-border: #d9cde3;
+      --btn-text: #49454f;
+      --dot-border: #000000;
+      --dot-selected: #000000;
+      --modal-bg: #ffffff;
+      --divider-color: #e0e0e0;
+      --letter-bg: #f2edf3;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --text-color: #e3e3e3;
+      --card-bg: #1e1e1e;
+      --card-border: #333333;
+      --btn-bg: #2b2b2b;
+      --btn-border: #3f3f3f;
+      --btn-text: #d1d1d1;
+      --dot-border: #ffffff;
+      --dot-selected: #ffffff;
+      --modal-bg: #1e1e1e;
+      --divider-color: #333333;
+      --letter-bg: #2b2b2b;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -15,12 +45,13 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #faf7fd;
-      color: #1c1b1f;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       display: flex;
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     /* Top App Bar */
@@ -29,13 +60,13 @@
       align-items: center;
       justify-content: space-between;
       padding: 16px 20px;
-      background-color: #faf7fd;
+      background-color: var(--bg-color);
     }
 
     .app-title {
       font-size: 18px;
       font-weight: 500;
-      color: #1c1b1f;
+      color: var(--text-color);
       flex-grow: 1;
       text-align: center;
     }
@@ -55,11 +86,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #1c1b1f;
+      color: var(--text-color);
     }
 
     .icon-btn:hover {
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: rgba(128, 128, 128, 0.1);
     }
 
     /* Home Button */
@@ -67,19 +98,19 @@
       display: none;
       align-items: center;
       gap: 4px;
-      background: #f2edf3;
-      border: 1px solid #d9cde3;
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
       padding: 6px 12px;
       border-radius: 16px;
       cursor: pointer;
       font-size: 13px;
       font-weight: 600;
-      color: #49454f;
+      color: var(--btn-text);
       transition: background-color 0.2s;
     }
 
     .home-btn:hover {
-      background-color: #e8def8;
+      opacity: 0.85;
     }
 
     /* Swipe Switch Button Styling */
@@ -87,20 +118,20 @@
       display: none;
       align-items: center;
       gap: 4px;
-      background: #f2edf3;
-      border: 1px solid #d9cde3;
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
       padding: 4px 8px;
       border-radius: 16px;
       cursor: pointer;
       font-size: 12px;
       font-weight: 600;
-      color: #49454f;
+      color: var(--btn-text);
       transition: background-color 0.2s, color 0.2s;
     }
 
     .switch-btn.active {
-      background-color: #e8def8;
-      color: #1d192b;
+      background-color: var(--card-border);
+      color: var(--text-color);
       border-color: #6750a4;
     }
 
@@ -140,8 +171,8 @@
     }
 
     .menu-btn {
-      background-color: #ffffff;
-      border: 2px solid #e0d8e8;
+      background-color: var(--card-bg);
+      border: 2px solid var(--card-border);
       border-radius: 16px;
       padding: 16px 24px;
       width: 100%;
@@ -149,7 +180,7 @@
       text-align: center;
       font-size: 18px;
       font-weight: 600;
-      color: #1c1b1f;
+      color: var(--text-color);
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.03);
       transition: transform 0.15s, border-color 0.15s, background-color 0.15s;
@@ -160,14 +191,13 @@
     .menu-btn:hover {
       transform: translateY(-2px);
       border-color: #6750a4;
-      background-color: #fcfbfe;
     }
 
     .feedback-btn {
-      background-color: #f2edf3;
-      border-color: #d9cde3;
+      background-color: var(--btn-bg);
+      border-color: var(--btn-border);
       font-size: 14px;
-      color: #49454f;
+      color: var(--btn-text);
       margin-top: 10px;
     }
 
@@ -199,26 +229,25 @@
     .timer {
       font-size: 20px;
       font-weight: 400;
-      color: #1c1b1f;
+      color: var(--text-color);
     }
 
     .hint-btn {
       display: none;
       align-items: center;
       gap: 6px;
-      background: #f2edf3;
-      border: 1px solid #d9cde3;
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
       padding: 6px 14px;
       border-radius: 16px;
       cursor: pointer;
       font-size: 13px;
       font-weight: 600;
-      color: #49454f;
+      color: var(--btn-text);
       transition: background-color 0.2s;
     }
 
     .hint-btn:hover {
-      background-color: #e8def8;
       border-color: #6750a4;
     }
 
@@ -242,18 +271,20 @@
       justify-content: center;
       font-size: 22px;
       font-weight: 800;
-      color: #1c1b1f;
-      background-color: #f2edf3;
+      color: var(--text-color);
+      background-color: var(--letter-bg);
       transition: background-color 0.2s, transform 0.1s;
     }
 
     .letter-card.active {
       background-color: #ffb3b3;
+      color: #1c1b1f;
       animation: pulse 1s infinite alternate ease-in-out;
     }
 
     .letter-card.completed {
       background-color: #c8e6c9;
+      color: #1c1b1f;
     }
 
     @keyframes pulse {
@@ -282,15 +313,15 @@
       width: 68px;
       height: 68px;
       border-radius: 50%;
-      border: 3px solid #000;
+      border: 3px solid var(--dot-border);
       background-color: transparent;
       cursor: pointer;
-      transition: transform 0.1s, background-color 0.15s;
+      transition: transform 0.1s, background-color 0.15s, border-color 0.15s;
       -webkit-tap-highlight-color: transparent;
     }
 
     .braille-dot.selected {
-      background-color: #000000;
+      background-color: var(--dot-selected);
     }
 
     /* Modals */
@@ -300,7 +331,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: rgba(0,0,0,0.4);
+      background-color: rgba(0,0,0,0.5);
       display: flex;
       justify-content: center;
       align-items: flex-end;
@@ -316,15 +347,15 @@
     }
 
     .modal-content {
-      background-color: #ffffff;
+      background-color: var(--modal-bg);
       width: 100%;
       max-width: 500px;
       border-top-left-radius: 24px;
       border-top-right-radius: 24px;
       padding: 24px;
-      box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.2);
       transform: translateY(100%);
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, background-color 0.3s;
     }
 
     .modal-overlay.open .modal-content {
@@ -339,8 +370,8 @@
       border-radius: 20px;
       transform: scale(0.9);
       max-width: 320px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.3s;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -367,7 +398,7 @@
 
     .modal-divider {
       height: 1px;
-      background-color: #e0e0e0;
+      background-color: var(--divider-color);
       margin-bottom: 16px;
       width: 100%;
     }
@@ -390,6 +421,7 @@
 
     .cheat-sheet-content {
       overflow-y: auto;
+      max-height: 80vh;
     }
 
     .alphabet-grid {
@@ -403,8 +435,8 @@
     }
 
     .alphabet-card {
-      background-color: #faf7fd;
-      border: 1px solid #e0d8e8;
+      background-color: var(--bg-color);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 8px;
       display: flex;
@@ -416,7 +448,7 @@
     .alphabet-card .char {
       font-weight: 800;
       font-size: 18px;
-      color: #1c1b1f;
+      color: var(--text-color);
     }
 
     .mini-braille {
@@ -430,12 +462,12 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      border: 1.5px solid #000;
+      border: 1.5px solid var(--dot-border);
       background-color: transparent;
     }
 
     .mini-dot.active {
-      background-color: #000;
+      background-color: var(--dot-selected);
     }
 
     .close-btn {
@@ -444,11 +476,16 @@
       font-size: 24px;
       cursor: pointer;
       line-height: 1;
-      color: #666;
+      color: var(--text-color);
+      opacity: 0.7;
+    }
+    
+    .close-btn:hover {
+      opacity: 1;
     }
   </style>
 </head>
-<body>
+<body data-theme="light">
 
   <!-- Top Navigation -->
   <header class="app-bar">
@@ -461,6 +498,27 @@
     </button>
     <div class="app-title" id="appTitle">braille practice</div>
     <div class="actions">
+      <!-- Przycisk Wyciszenia Dźwięku -->
+      <button class="icon-btn" id="soundToggleBtn" title="Włącz/wyłącz dźwięk">
+        <svg id="soundIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      </button>
+      <!-- Przycisk Zmiany Motywu (Jasny/Ciemny) -->
+      <button class="icon-btn" id="themeToggleBtn" title="Zmień motyw">
+        <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
       <!-- Przełącznik Swipe ON/OFF -->
       <button class="switch-btn" id="swipeToggleBtn" title="Włącz/wyłącz pisanie przeciąganiem">
         <span class="switch-indicator"></span>
@@ -554,7 +612,7 @@
       </div>
       <div style="font-size: 32px; font-weight: 800; color: #6750a4; margin-bottom: 12px;" id="hintLetterDisplay">A</div>
       <div id="hintMiniBrailleContainer" style="margin-bottom: 20px;"></div>
-      <button class="menu-btn" id="closeHintBtn" style="max-width: 120px; padding: 10px 16px; font-size: 15px; background: #6750a4; color: #fff; border: none;">Got it</button>
+      <button class="menu-btn" id="closeHintBtn" style="max-width: 120px; padding: 10px 16px; font-size: 15px; background: #6750a4; color: #fff; border: none; margin: 0 auto;">Got it</button>
     </div>
   </div>
 
@@ -747,7 +805,42 @@
     let timerInterval = null;
     let timerRunning = false;
     let isMouseDown = false;
-    let isSwipeEnabled = false; // Zmieniono domyślną wartość na false
+    let isSwipeEnabled = false;
+    let isSoundEnabled = true;
+
+    // Zbiór zapamiętujący kropki zaktywowane podczas BIEŻĄCEGO przeciągnięcia (swipe)
+    let touchedInCurrentDrag = new Set();
+
+    // Web Audio API dla dźwięku kliknięcia
+    let audioCtx = null;
+    function playClickSound() {
+      if (!isSoundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.04);
+        
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+      } catch (e) {
+        // Ignorujemy błędy kontekstu audio
+      }
+    }
 
     const appTitle = document.getElementById('appTitle');
     const homeScreen = document.getElementById('homeScreen');
@@ -767,6 +860,10 @@
     const alphabetGrid = document.getElementById('alphabetGrid');
     const brailleContainer = document.getElementById('brailleContainer');
     const swipeToggleBtn = document.getElementById('swipeToggleBtn');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const soundIcon = document.getElementById('soundIcon');
     const menuCards = document.querySelectorAll('.menu-btn[data-mode]');
 
     const hintModal = document.getElementById('hintModal');
@@ -784,8 +881,35 @@
     }
 
     function setupEventListeners() {
+      // Obsługa wyciszania dźwięku
+      soundToggleBtn.addEventListener('click', () => {
+        isSoundEnabled = !isSoundEnabled;
+        if (isSoundEnabled) {
+          playClickSound();
+          soundIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>';
+          soundToggleBtn.style.opacity = '1';
+        } else {
+          soundIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>';
+          soundToggleBtn.style.opacity = '0.5';
+        }
+      });
+
+      // Obsługa zmiany motywu
+      themeToggleBtn.addEventListener('click', () => {
+        playClickSound();
+        const currentTheme = document.body.getAttribute('data-theme');
+        if (currentTheme === 'light') {
+          document.body.setAttribute('data-theme', 'dark');
+          themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        } else {
+          document.body.setAttribute('data-theme', 'light');
+          themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+        }
+      });
+
       menuCards.forEach(card => {
         card.addEventListener('click', () => {
+          playClickSound();
           const mode = card.getAttribute('data-mode');
           if (mode === 'cheatsheet') {
             cheatSheetModal.classList.add('open');
@@ -796,10 +920,12 @@
       });
 
       homeBtn.addEventListener('click', () => {
+        playClickSound();
         goToHomeScreen();
       });
 
       swipeToggleBtn.addEventListener('click', () => {
+        playClickSound();
         isSwipeEnabled = !isSwipeEnabled;
         if (isSwipeEnabled) {
           swipeToggleBtn.classList.add('active');
@@ -807,13 +933,13 @@
           swipeToggleBtn.classList.remove('active');
         }
       });
-      // Usunięto automatyczne dodawanie klasy 'active', więc przycisk jest domyślnie wyłączony
 
-      historyBtn.addEventListener('click', showHistory);
-      closeHistoryBtn.addEventListener('click', () => historyModal.classList.remove('open'));
-      closeCheatSheetBtn.addEventListener('click', () => cheatSheetModal.classList.remove('open'));
+      historyBtn.addEventListener('click', () => { playClickSound(); showHistory(); });
+      closeHistoryBtn.addEventListener('click', () => { playClickSound(); historyModal.classList.remove('open'); });
+      closeCheatSheetBtn.addEventListener('click', () => { playClickSound(); cheatSheetModal.classList.remove('open'); });
 
       hintBtn.addEventListener('click', () => {
+        playClickSound();
         if (currentMode !== 'practice') return;
         const targetLetter = currentTask[currentIndex];
         const correctDots = BRAILLE_ALPHABET[targetLetter] || [];
@@ -833,6 +959,7 @@
       });
 
       closeHintBtn.addEventListener('click', () => {
+        playClickSound();
         hintModal.classList.remove('open');
       });
 
@@ -848,24 +975,39 @@
         if (e.target === cheatSheetModal) cheatSheetModal.classList.remove('open');
       });
 
-      window.addEventListener('mousedown', () => { isMouseDown = true; });
-      window.addEventListener('mouseup', () => { isMouseDown = false; });
+      // Zdarzenia myszy - śledzenie przytrzymania oraz resetowanie zbioru dotkniętych kropek po puszczeniu
+      window.addEventListener('mousedown', () => { 
+        isMouseDown = true; 
+        touchedInCurrentDrag.clear();
+      });
+      window.addEventListener('mouseup', () => { 
+        isMouseDown = false; 
+        touchedInCurrentDrag.clear();
+      });
+
+      // Reset dla ekranu dotykowego przy zakończeniu dotyku
+      window.addEventListener('touchend', () => {
+        touchedInCurrentDrag.clear();
+      });
+      window.addEventListener('touchcancel', () => {
+        touchedInCurrentDrag.clear();
+      });
 
       dotElements.forEach(dot => {
         dot.addEventListener('mousedown', (e) => {
           e.preventDefault();
-          toggleDotFromElement(dot);
+          toggleDotFromElement(dot, false);
         });
 
         dot.addEventListener('mouseenter', () => {
           if (isSwipeEnabled && isMouseDown) {
-            toggleDotFromElement(dot);
+            toggleDotFromElement(dot, true);
           }
         });
 
         dot.addEventListener('touchstart', (e) => {
           e.preventDefault();
-          toggleDotFromElement(dot);
+          toggleDotFromElement(dot, false);
         }, { passive: false });
       });
 
@@ -875,7 +1017,7 @@
         const touch = e.touches[0];
         const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
         if (targetElement && targetElement.classList.contains('braille-dot')) {
-          toggleDotFromElement(targetElement);
+          toggleDotFromElement(targetElement, true);
         }
       }, { passive: false });
     }
@@ -913,8 +1055,16 @@
       appTitle.textContent = 'braille practice';
     }
 
-    function toggleDotFromElement(dotEl) {
+    function toggleDotFromElement(dotEl, isSwipeMove = false) {
       const dotVal = parseInt(dotEl.getAttribute('data-dot'));
+
+      // Jeśli reakcja następuje podczas ruchu SWIPE i kropka była już dotknięta w TYM SAMYM geście -> ignorujemy
+      if (isSwipeMove && touchedInCurrentDrag.has(dotVal)) {
+        return;
+      }
+
+      touchedInCurrentDrag.add(dotVal);
+      playClickSound();
       
       if (currentMode === 'timetrial' && !timerRunning && currentIndex === 0) {
         startTimer();
@@ -1037,7 +1187,7 @@
     function showHistory() {
       historyList.innerHTML = '';
       if (history.length === 0) {
-        historyList.innerHTML = '<li class="history-item" style="color: #666; justify-content: center;">Brak wyników w historii.</li>';
+        historyList.innerHTML = '<li class="history-item" style="color: #888; justify-content: center;">Brak wyników w historii.</li>';
       } else {
         history.forEach((item, index) => {
           const li = document.createElement('li');
