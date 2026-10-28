@@ -18,6 +18,8 @@
       --modal-bg: #ffffff;
       --divider-color: #e0e0e0;
       --letter-bg: #f2edf3;
+      --bg-dot-color: rgba(0, 0, 0, 0.05);
+      --bg-dot-active-color: rgba(103, 80, 164, 0.22);
     }
 
     [data-theme="dark"] {
@@ -33,6 +35,8 @@
       --modal-bg: #1e1e1e;
       --divider-color: #333333;
       --letter-bg: #2b2b2b;
+      --bg-dot-color: rgba(255, 255, 255, 0.04);
+      --bg-dot-active-color: rgba(208, 188, 255, 0.25);
     }
 
     * {
@@ -52,10 +56,59 @@
       height: 100vh;
       overflow: hidden;
       transition: background-color 0.3s, color 0.3s;
+      position: relative;
+    }
+
+    /* Animated Braille Background */
+    .bg-braille-container {
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      z-index: 0;
+      pointer-events: none;
+      display: grid;
+      grid-template-columns: repeat(32, 1fr);
+      gap: 32px;
+      padding: 40px;
+      animation: rotateBg 140s linear infinite;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    .bg-braille-container.hidden {
+      opacity: 0;
+    }
+
+    @keyframes rotateBg {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .bg-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--bg-dot-color);
+      transition: background-color 0.4s ease, transform 0.4s ease;
+      justify-self: center;
+      align-self: center;
+    }
+
+    .bg-dot.active {
+      background-color: var(--bg-dot-active-color);
+      transform: scale(1.35);
     }
 
     /* Top App Bar */
     .app-bar {
+      position: relative;
+      z-index: 10;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -146,13 +199,24 @@
       background-color: #6750a4;
     }
 
+    /* Pozioma linia oddzielająca nagłówek od reszty */
+    .header-divider {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 1px;
+      background-color: var(--divider-color);
+    }
+
     /* Main Container */
     .main-container {
+      position: relative;
+      z-index: 5;
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 10px 20px;
+      padding: 20px;
       max-width: 600px;
       margin: 0 auto;
       width: 100%;
@@ -206,6 +270,7 @@
       display: none;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       flex: 1;
       width: 100%;
     }
@@ -214,15 +279,28 @@
       display: flex;
     }
 
-    /* Top Controls in Game (Timer & Hint) */
+    /* Braille Dot Grid */
+    .braille-container {
+      margin-top: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .braille-row {
+      display: flex;
+      gap: 20px;
+    }
+
+    /* Top Controls in Game (Timer & Hint) - szerokość dopasowana do panelu kropek (68*2 + 20 = 156px) */
     .game-controls-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 100%;
-      max-width: 320px;
-      margin-top: 10px;
-      margin-bottom: 24px;
+      width: 156px;
+      margin-bottom: 20px;
       min-height: 36px;
     }
 
@@ -230,11 +308,14 @@
       font-size: 20px;
       font-weight: 400;
       color: var(--text-color);
+      width: 100%;
+      text-align: center;
     }
 
     .hint-btn {
       display: none;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       background: var(--btn-bg);
       border: 1px solid var(--btn-border);
@@ -245,6 +326,7 @@
       font-weight: 600;
       color: var(--btn-text);
       transition: background-color 0.2s;
+      width: 100%;
     }
 
     .hint-btn:hover {
@@ -259,7 +341,7 @@
       justify-content: center;
       align-items: center;
       width: 100%;
-      margin-bottom: auto;
+      margin-bottom: 20px;
     }
 
     .letter-card {
@@ -294,19 +376,6 @@
       100% {
         background-color: #ef9a9a;
       }
-    }
-
-    /* Braille Dot Grid */
-    .braille-container {
-      margin-bottom: 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .braille-row {
-      display: flex;
-      gap: 20px;
     }
 
     .braille-dot {
@@ -369,7 +438,7 @@
     .modal-overlay.center-modal .modal-content {
       border-radius: 20px;
       transform: scale(0.9);
-      max-width: 320px;
+      max-width: 420px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.3);
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.3s;
       display: flex;
@@ -381,6 +450,12 @@
 
     .modal-overlay.center-modal.open .modal-content {
       transform: scale(1);
+    }
+
+    /* Szerszy modal specjalnie dla ściągawki */
+    .modal-overlay.center-modal.cheat-modal-overlay .modal-content {
+      max-width: 640px;
+      width: 90%;
     }
 
     .modal-header {
@@ -403,19 +478,28 @@
       width: 100%;
     }
 
+    .best-score-banner {
+      font-size: 18px;
+      font-weight: 700;
+      color: #6750a4;
+      margin-bottom: 12px;
+    }
+
     .history-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       max-height: 250px;
       overflow-y: auto;
+      width: 100%;
     }
 
     .history-item {
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: center;
+      gap: 8px;
       font-size: 16px;
     }
 
@@ -424,21 +508,29 @@
       max-height: 80vh;
     }
 
+    /* Układ wielokolumnowy dla szerokiej ściągawki */
     .alphabet-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+      grid-template-columns: repeat(5, 1fr);
       gap: 12px;
       padding-bottom: 10px;
       max-height: 60vh;
       overflow-y: auto;
       padding-right: 4px;
+      width: 100%;
+    }
+
+    @media (max-width: 540px) {
+      .alphabet-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
 
     .alphabet-card {
       background-color: var(--bg-color);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 8px;
+      padding: 10px 6px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -447,22 +539,22 @@
 
     .alphabet-card .char {
       font-weight: 800;
-      font-size: 18px;
+      font-size: 16px;
       color: var(--text-color);
     }
 
     .mini-braille {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 4px;
-      padding: 4px;
+      gap: 3px;
+      padding: 2px;
     }
 
     .mini-dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      border: 1.5px solid var(--dot-border);
+      border: 1.2px solid var(--dot-border);
       background-color: transparent;
     }
 
@@ -486,6 +578,9 @@
   </style>
 </head>
 <body data-theme="light">
+
+  <!-- Animated Braille Background -->
+  <div class="bg-braille-container" id="bgBraille"></div>
 
   <!-- Top Navigation -->
   <header class="app-bar">
@@ -534,6 +629,9 @@
     </div>
   </header>
 
+  <!-- Linia rozdzielająca nagłówek od reszty -->
+  <div class="header-divider"></div>
+
   <!-- Main Container -->
   <main class="main-container">
 
@@ -581,22 +679,23 @@
   </main>
 
   <!-- Score History Sheet -->
-  <div class="modal-overlay" id="historyModal">
+  <div class="modal-overlay center-modal" id="historyModal">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title">Score History</div>
+        <div class="modal-title" style="margin: 0 auto;">Score History</div>
         <button class="close-btn" id="closeHistoryBtn">&times;</button>
       </div>
       <div class="modal-divider"></div>
+      <div class="best-score-banner" id="bestScoreBanner">Best: --</div>
       <ul class="history-list" id="historyList"></ul>
     </div>
   </div>
 
-  <!-- Braille Cheat Sheet Modal (Central Widget) -->
-  <div class="modal-overlay center-modal" id="cheatSheetModal">
+  <!-- Braille Cheat Sheet Modal (Szeroki widget) -->
+  <div class="modal-overlay center-modal cheat-modal-overlay" id="cheatSheetModal">
     <div class="modal-content cheat-sheet-content">
       <div class="modal-header">
-        <div class="modal-title">Braille Alphabet</div>
+        <div class="modal-title" style="margin: 0 auto;">Braille Alphabet</div>
         <button class="close-btn" id="closeCheatSheetBtn">&times;</button>
       </div>
       <div class="modal-divider"></div>
@@ -795,11 +894,10 @@
     ];
 
     let currentMode = 'home';
-    let currentTask = "";
+    let currentTask = [];
     let currentIndex = 0;
     let selectedDots = new Set();
     let history = [];
-    let bestTime = null;
 
     let startTime = null;
     let timerInterval = null;
@@ -808,10 +906,11 @@
     let isSwipeEnabled = false;
     let isSoundEnabled = true;
 
-    // Zbiór zapamiętujący kropki zaktywowane podczas BIEŻĄCEGO przeciągnięcia (swipe)
     let touchedInCurrentDrag = new Set();
 
-    // Web Audio API dla dźwięku kliknięcia
+    let bgDotsArray = [];
+    let bgAnimationInterval = null;
+
     let audioCtx = null;
     function playClickSound() {
       if (!isSoundEnabled) return;
@@ -837,9 +936,7 @@
         
         osc.start();
         osc.stop(audioCtx.currentTime + 0.04);
-      } catch (e) {
-        // Ignorujemy błędy kontekstu audio
-      }
+      } catch (e) {}
     }
 
     const appTitle = document.getElementById('appTitle');
@@ -853,6 +950,7 @@
     const historyBtn = document.getElementById('historyBtn');
     const historyModal = document.getElementById('historyModal');
     const historyList = document.getElementById('historyList');
+    const bestScoreBanner = document.getElementById('bestScoreBanner');
     const closeHistoryBtn = document.getElementById('closeHistoryBtn');
 
     const cheatSheetModal = document.getElementById('cheatSheetModal');
@@ -870,18 +968,54 @@
     const hintLetterDisplay = document.getElementById('hintLetterDisplay');
     const hintMiniBrailleContainer = document.getElementById('hintMiniBrailleContainer');
     const closeHintBtn = document.getElementById('closeHintBtn');
+    const bgBraille = document.getElementById('bgBraille');
+
+    function createBackgroundBraille() {
+      bgBraille.innerHTML = '';
+      bgDotsArray = [];
+      const dotsCount = 800; // Liczba kropek w wielkiej siatce tła
+
+      for (let i = 0; i < dotsCount; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'bg-dot';
+        bgBraille.appendChild(dot);
+        bgDotsArray.push(dot);
+      }
+
+      startBgAnimation();
+    }
+
+    function startBgAnimation() {
+      if (bgAnimationInterval) clearInterval(bgAnimationInterval);
+      bgAnimationInterval = setInterval(() => {
+        if (bgDotsArray.length === 0) return;
+        for (let i = 0; i < 18; i++) {
+          const randomIndex = Math.floor(Math.random() * bgDotsArray.length);
+          const dot = bgDotsArray[randomIndex];
+          if (dot) {
+            dot.classList.toggle('active');
+          }
+        }
+      }, 100);
+    }
 
     function getRandomNoun() {
       return COMMON_ENGLISH_NOUNS[Math.floor(Math.random() * COMMON_ENGLISH_NOUNS.length)];
     }
 
+    function getRandomTimeTrialLetters() {
+      const alphabetKeys = Object.keys(BRAILLE_ALPHABET);
+      let shuffled = [...alphabetKeys].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, 10);
+    }
+
     function init() {
+      createBackgroundBraille();
       setupEventListeners();
       buildAlphabetCheatSheet();
     }
 
     function setupEventListeners() {
-      // Obsługa wyciszania dźwięku
       soundToggleBtn.addEventListener('click', () => {
         isSoundEnabled = !isSoundEnabled;
         if (isSoundEnabled) {
@@ -894,7 +1028,6 @@
         }
       });
 
-      // Obsługa zmiany motywu
       themeToggleBtn.addEventListener('click', () => {
         playClickSound();
         const currentTheme = document.body.getAttribute('data-theme');
@@ -975,7 +1108,6 @@
         if (e.target === cheatSheetModal) cheatSheetModal.classList.remove('open');
       });
 
-      // Zdarzenia myszy - śledzenie przytrzymania oraz resetowanie zbioru dotkniętych kropek po puszczeniu
       window.addEventListener('mousedown', () => { 
         isMouseDown = true; 
         touchedInCurrentDrag.clear();
@@ -985,7 +1117,6 @@
         touchedInCurrentDrag.clear();
       });
 
-      // Reset dla ekranu dotykowego przy zakończeniu dotyku
       window.addEventListener('touchend', () => {
         touchedInCurrentDrag.clear();
       });
@@ -1028,6 +1159,7 @@
       gameView.classList.add('active');
       homeBtn.style.display = 'flex';
       swipeToggleBtn.style.display = 'flex';
+      bgBraille.classList.add('hidden');
 
       if (currentMode === 'timetrial') {
         appTitle.textContent = 'time trial';
@@ -1052,13 +1184,13 @@
       homeBtn.style.display = 'none';
       swipeToggleBtn.style.display = 'none';
       historyBtn.style.display = 'none';
+      bgBraille.classList.remove('hidden');
       appTitle.textContent = 'braille practice';
     }
 
     function toggleDotFromElement(dotEl, isSwipeMove = false) {
       const dotVal = parseInt(dotEl.getAttribute('data-dot'));
 
-      // Jeśli reakcja następuje podczas ruchu SWIPE i kropka była już dotknięta w TYM SAMYM geście -> ignorujemy
       if (isSwipeMove && touchedInCurrentDrag.has(dotVal)) {
         return;
       }
@@ -1101,7 +1233,11 @@
     }
 
     function loadNewTask() {
-      currentTask = getRandomNoun();
+      if (currentMode === 'timetrial') {
+        currentTask = getRandomTimeTrialLetters();
+      } else {
+        currentTask = getRandomNoun().split('');
+      }
       currentIndex = 0;
       selectedDots.clear();
       updateDotsUI();
@@ -1154,8 +1290,8 @@
           if (currentMode === 'timetrial') {
             stopTimer();
             const finalTime = ((Date.now() - startTime) / 1000).toFixed(1);
-            saveScore(currentTask, finalTime);
-            showCompletionModal(finalTime);
+            saveScore(finalTime);
+            loadNewTask();
           } else {
             loadNewTask();
           }
@@ -1179,29 +1315,28 @@
       clearInterval(timerInterval);
     }
 
-    function saveScore(word, time) {
-      history.unshift({ word, time: parseFloat(time), date: new Date().toLocaleTimeString() });
+    function saveScore(time) {
+      history.unshift(parseFloat(time));
       if (history.length > 10) history.pop();
     }
 
     function showHistory() {
       historyList.innerHTML = '';
       if (history.length === 0) {
-        historyList.innerHTML = '<li class="history-item" style="color: #888; justify-content: center;">Brak wyników w historii.</li>';
+        bestScoreBanner.textContent = 'Best: --';
+        historyList.innerHTML = '<li class="history-item" style="color: #888;">Brak wyników w historii.</li>';
       } else {
-        history.forEach((item, index) => {
+        const bestTime = Math.min(...history);
+        bestScoreBanner.textContent = `Best: ${bestTime.toFixed(1)}s`;
+
+        history.forEach((time, index) => {
           const li = document.createElement('li');
           li.className = 'history-item';
-          li.innerHTML = `<strong>#${index + 1}</strong> &bull; Słowo: <strong>${item.word}</strong> &bull; Czas: <span style="color: #6750a4; font-weight:600;">${item.time}s</span>`;
+          li.innerHTML = `<strong>#${index + 1}</strong> &bull; <span style="color: #6750a4; font-weight:600;">${time.toFixed(1)}s</span>`;
           historyList.appendChild(li);
         });
       }
       historyModal.classList.add('open');
-    }
-
-    function showCompletionModal(time) {
-      alert(`Gratulacje! Ukończyłeś słowo "${currentTask}" w czasie ${time}s!`);
-      loadNewTask();
     }
 
     window.onload = init;
