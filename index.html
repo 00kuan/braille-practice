@@ -84,7 +84,7 @@
 
     /* Swipe Switch Button Styling */
     .switch-btn {
-      display: none; /* Domyślnie ukryty na starcie */
+      display: none;
       align-items: center;
       gap: 4px;
       background: #f2edf3;
@@ -136,7 +136,7 @@
       flex: 1;
       width: 100%;
       gap: 16px;
-      padding-bottom: 40px;
+      padding-bottom: 20px;
     }
 
     .menu-btn {
@@ -153,12 +153,22 @@
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.03);
       transition: transform 0.15s, border-color 0.15s, background-color 0.15s;
+      text-decoration: none;
+      display: block;
     }
 
     .menu-btn:hover {
       transform: translateY(-2px);
       border-color: #6750a4;
       background-color: #fcfbfe;
+    }
+
+    .feedback-btn {
+      background-color: #f2edf3;
+      border-color: #d9cde3;
+      font-size: 14px;
+      color: #49454f;
+      margin-top: 10px;
     }
 
     /* Game View Container */
@@ -174,14 +184,42 @@
       display: flex;
     }
 
-    /* Timer Display */
+    /* Top Controls in Game (Timer & Hint) */
+    .game-controls-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 320px;
+      margin-top: 10px;
+      margin-bottom: 24px;
+      min-height: 36px;
+    }
+
     .timer {
       font-size: 20px;
       font-weight: 400;
       color: #1c1b1f;
-      margin-top: 10px;
-      margin-bottom: 24px;
-      min-height: 28px;
+    }
+
+    .hint-btn {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: #f2edf3;
+      border: 1px solid #d9cde3;
+      padding: 6px 14px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #49454f;
+      transition: background-color 0.2s;
+    }
+
+    .hint-btn:hover {
+      background-color: #e8def8;
+      border-color: #6750a4;
     }
 
     /* Letters Grid */
@@ -247,7 +285,7 @@
       border: 3px solid #000;
       background-color: transparent;
       cursor: pointer;
-      transition: transform 0.1s;
+      transition: transform 0.1s, background-color 0.15s;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -300,10 +338,14 @@
     .modal-overlay.center-modal .modal-content {
       border-radius: 20px;
       transform: scale(0.9);
-      max-width: 550px;
-      max-height: 85vh;
+      max-width: 320px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 24px;
     }
 
     .modal-overlay.center-modal.open .modal-content {
@@ -315,6 +357,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
+      width: 100%;
     }
 
     .modal-title {
@@ -326,6 +369,7 @@
       height: 1px;
       background-color: #e0e0e0;
       margin-bottom: 16px;
+      width: 100%;
     }
 
     .history-list {
@@ -440,11 +484,22 @@
       <button class="menu-btn" data-mode="practice">words</button>
       <button class="menu-btn" data-mode="timetrial">time trial</button>
       <button class="menu-btn" data-mode="cheatsheet">braille alphabet</button>
+      
+      <!-- Przycisk opinii / kontaktu -->
+      <a class="menu-btn feedback-btn" href="mailto:braille.practice@gmail.com?subject=Braille%20Practice%20Feedback&body=Hi!%20I%20have%20an%20idea%20to%20improve%20the%20app:%0A%0A">
+        Feedback & ideas
+      </a>
     </div>
 
     <!-- Ekran Gry / Treningu -->
     <div class="game-view" id="gameView">
-      <div class="timer" id="timerDisplay">0.0s</div>
+      <div class="game-controls-top">
+        <div class="timer" id="timerDisplay">0.0s</div>
+        <button class="hint-btn" id="hintBtn" title="Pokaż podpowiedź dla aktualnej litery">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <span>Hint</span>
+        </button>
+      </div>
 
       <div class="letters-wrap" id="lettersContainer"></div>
 
@@ -488,6 +543,18 @@
       </div>
       <div class="modal-divider"></div>
       <div class="alphabet-grid" id="alphabetGrid"></div>
+    </div>
+  </div>
+
+  <!-- Hint Modal (Central Widget for Hint) -->
+  <div class="modal-overlay center-modal" id="hintModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" style="margin: 0 auto;">Hint</div>
+      </div>
+      <div style="font-size: 32px; font-weight: 800; color: #6750a4; margin-bottom: 12px;" id="hintLetterDisplay">A</div>
+      <div id="hintMiniBrailleContainer" style="margin-bottom: 20px;"></div>
+      <button class="menu-btn" id="closeHintBtn" style="max-width: 120px; padding: 10px 16px; font-size: 15px; background: #6750a4; color: #fff; border: none;">Got it</button>
     </div>
   </div>
 
@@ -680,12 +747,13 @@
     let timerInterval = null;
     let timerRunning = false;
     let isMouseDown = false;
-    let isSwipeEnabled = true;
+    let isSwipeEnabled = false; // Zmieniono domyślną wartość na false
 
     const appTitle = document.getElementById('appTitle');
     const homeScreen = document.getElementById('homeScreen');
     const gameView = document.getElementById('gameView');
     const timerDisplay = document.getElementById('timerDisplay');
+    const hintBtn = document.getElementById('hintBtn');
     const lettersContainer = document.getElementById('lettersContainer');
     const dotElements = document.querySelectorAll('.braille-dot');
     const homeBtn = document.getElementById('homeBtn');
@@ -699,7 +767,12 @@
     const alphabetGrid = document.getElementById('alphabetGrid');
     const brailleContainer = document.getElementById('brailleContainer');
     const swipeToggleBtn = document.getElementById('swipeToggleBtn');
-    const menuCards = document.querySelectorAll('.menu-btn');
+    const menuCards = document.querySelectorAll('.menu-btn[data-mode]');
+
+    const hintModal = document.getElementById('hintModal');
+    const hintLetterDisplay = document.getElementById('hintLetterDisplay');
+    const hintMiniBrailleContainer = document.getElementById('hintMiniBrailleContainer');
+    const closeHintBtn = document.getElementById('closeHintBtn');
 
     function getRandomNoun() {
       return COMMON_ENGLISH_NOUNS[Math.floor(Math.random() * COMMON_ENGLISH_NOUNS.length)];
@@ -734,12 +807,38 @@
           swipeToggleBtn.classList.remove('active');
         }
       });
-      swipeToggleBtn.classList.add('active');
+      // Usunięto automatyczne dodawanie klasy 'active', więc przycisk jest domyślnie wyłączony
 
       historyBtn.addEventListener('click', showHistory);
       closeHistoryBtn.addEventListener('click', () => historyModal.classList.remove('open'));
-
       closeCheatSheetBtn.addEventListener('click', () => cheatSheetModal.classList.remove('open'));
+
+      hintBtn.addEventListener('click', () => {
+        if (currentMode !== 'practice') return;
+        const targetLetter = currentTask[currentIndex];
+        const correctDots = BRAILLE_ALPHABET[targetLetter] || [];
+
+        hintLetterDisplay.textContent = targetLetter;
+        
+        let miniBrailleHtml = '<div class="mini-braille" style="margin: 0 auto; display: inline-grid; gap: 6px;">';
+        const dotPositions = [1, 4, 2, 5, 3, 6];
+        dotPositions.forEach(p => {
+          const isActive = correctDots.includes(p) ? 'active' : '';
+          miniBrailleHtml += `<div class="mini-dot ${isActive}" style="width: 16px; height: 16px;"></div>`;
+        });
+        miniBrailleHtml += '</div>';
+
+        hintMiniBrailleContainer.innerHTML = miniBrailleHtml;
+        hintModal.classList.add('open');
+      });
+
+      closeHintBtn.addEventListener('click', () => {
+        hintModal.classList.remove('open');
+      });
+
+      hintModal.addEventListener('click', (e) => {
+        if (e.target === hintModal) hintModal.classList.remove('open');
+      });
 
       historyModal.addEventListener('click', (e) => {
         if (e.target === historyModal) historyModal.classList.remove('open');
@@ -791,11 +890,13 @@
       if (currentMode === 'timetrial') {
         appTitle.textContent = 'time trial';
         historyBtn.style.display = 'flex';
-        timerDisplay.style.visibility = 'visible';
+        timerDisplay.style.display = 'block';
+        hintBtn.style.display = 'none';
       } else {
         appTitle.textContent = 'words';
         historyBtn.style.display = 'none';
-        timerDisplay.style.visibility = 'hidden';
+        timerDisplay.style.display = 'none';
+        hintBtn.style.display = 'flex';
       }
 
       loadNewTask();
@@ -844,30 +945,22 @@
         });
         miniBrailleHtml += '</div>';
 
-        card.innerHTML = `<div class="char">${char}</div>${miniBrailleHtml}`;
+        card.innerHTML = `<span class="char">${char}</span>${miniBrailleHtml}`;
         alphabetGrid.appendChild(card);
       });
     }
 
     function loadNewTask() {
-      selectedDots.clear();
+      currentTask = getRandomNoun();
       currentIndex = 0;
+      selectedDots.clear();
       updateDotsUI();
-
+      renderLetters();
+      
       if (currentMode === 'timetrial') {
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-        for (let i = letters.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [letters[i], letters[j]] = [letters[j], letters[i]];
-        }
-        currentTask = letters.slice(0, 10).join('');
         stopTimer();
         timerDisplay.textContent = '0.0s';
-      } else {
-        currentTask = getRandomNoun();
       }
-
-      renderLetters();
     }
 
     function renderLetters() {
@@ -875,20 +968,20 @@
       for (let i = 0; i < currentTask.length; i++) {
         const card = document.createElement('div');
         card.className = 'letter-card';
+        card.textContent = currentTask[i];
         if (i === currentIndex) {
           card.classList.add('active');
         } else if (i < currentIndex) {
           card.classList.add('completed');
         }
-        card.textContent = currentTask[i];
         lettersContainer.appendChild(card);
       }
     }
 
     function updateDotsUI() {
       dotElements.forEach(dot => {
-        const val = parseInt(dot.getAttribute('data-dot'));
-        if (selectedDots.has(val)) {
+        const dotVal = parseInt(dot.getAttribute('data-dot'));
+        if (selectedDots.has(dotVal)) {
           dot.classList.add('selected');
         } else {
           dot.classList.remove('selected');
@@ -898,25 +991,23 @@
 
     function checkAnswer() {
       const targetLetter = currentTask[currentIndex];
-      const targetDots = BRAILLE_ALPHABET[targetLetter] || [];
+      const correctDots = BRAILLE_ALPHABET[targetLetter];
 
-      if (setsEqual(selectedDots, new Set(targetDots))) {
+      if (!correctDots) return;
+
+      if (selectedDots.size === correctDots.length && [...selectedDots].every(d => correctDots.includes(d))) {
+        currentIndex++;
         selectedDots.clear();
         updateDotsUI();
-        currentIndex++;
 
         if (currentIndex >= currentTask.length) {
           if (currentMode === 'timetrial') {
             stopTimer();
-            const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-            addResult(parseFloat(elapsed));
-            setTimeout(() => {
-              loadNewTask();
-            }, 200);
+            const finalTime = ((Date.now() - startTime) / 1000).toFixed(1);
+            saveScore(currentTask, finalTime);
+            showCompletionModal(finalTime);
           } else {
-            setTimeout(() => {
-              loadNewTask();
-            }, 200);
+            loadNewTask();
           }
         } else {
           renderLetters();
@@ -924,56 +1015,46 @@
       }
     }
 
-    function setsEqual(setA, setB) {
-      if (setA.size !== setB.size) return false;
-      for (let item of setA) {
-        if (!setB.has(item)) return false;
-      }
-      return true;
-    }
-
     function startTimer() {
-      timerRunning = true;
       startTime = Date.now();
+      timerRunning = true;
       timerInterval = setInterval(() => {
-        const elapsed = (Date.now() - startTime) / 1000;
-        timerDisplay.textContent = `${elapsed.toFixed(1)}s`;
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+        timerDisplay.textContent = elapsed + 's';
       }, 100);
     }
 
     function stopTimer() {
       timerRunning = false;
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
+      clearInterval(timerInterval);
     }
 
-    function addResult(time) {
-      history.unshift(time);
-      if (history.length > 5) history = history.slice(0, 5);
-      if (bestTime === null || time < bestTime) bestTime = time;
+    function saveScore(word, time) {
+      history.unshift({ word, time: parseFloat(time), date: new Date().toLocaleTimeString() });
+      if (history.length > 10) history.pop();
     }
 
     function showHistory() {
       historyList.innerHTML = '';
-
-      const bestItem = document.createElement('li');
-      bestItem.className = 'history-item';
-      bestItem.innerHTML = `⭐ <strong>Best:</strong> ${bestTime !== null ? bestTime.toFixed(2) + 's' : '-'}`;
-      historyList.appendChild(bestItem);
-
-      history.forEach(t => {
-        const li = document.createElement('li');
-        li.className = 'history-item';
-        li.innerHTML = `⏱️ ${t.toFixed(2)}s`;
-        historyList.appendChild(li);
-      });
-
+      if (history.length === 0) {
+        historyList.innerHTML = '<li class="history-item" style="color: #666; justify-content: center;">Brak wyników w historii.</li>';
+      } else {
+        history.forEach((item, index) => {
+          const li = document.createElement('li');
+          li.className = 'history-item';
+          li.innerHTML = `<strong>#${index + 1}</strong> &bull; Słowo: <strong>${item.word}</strong> &bull; Czas: <span style="color: #6750a4; font-weight:600;">${item.time}s</span>`;
+          historyList.appendChild(li);
+        });
+      }
       historyModal.classList.add('open');
     }
 
-    init();
+    function showCompletionModal(time) {
+      alert(`Gratulacje! Ukończyłeś słowo "${currentTask}" w czasie ${time}s!`);
+      loadNewTask();
+    }
+
+    window.onload = init;
   </script>
 </body>
 </html>
