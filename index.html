@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Braille Trainer</title>
+  <title>braille practice</title>
   <style>
     * {
       box-sizing: border-box;
@@ -38,7 +38,6 @@
       color: #1c1b1f;
       flex-grow: 1;
       text-align: center;
-      margin-left: 150px;
     }
 
     .actions {
@@ -63,9 +62,29 @@
       background-color: rgba(0, 0, 0, 0.05);
     }
 
+    /* Home Button */
+    .home-btn {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      background: #f2edf3;
+      border: 1px solid #d9cde3;
+      padding: 6px 12px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #49454f;
+      transition: background-color 0.2s;
+    }
+
+    .home-btn:hover {
+      background-color: #e8def8;
+    }
+
     /* Swipe Switch Button Styling */
     .switch-btn {
-      display: flex;
+      display: none; /* Domyślnie ukryty na starcie */
       align-items: center;
       gap: 4px;
       background: #f2edf3;
@@ -106,6 +125,53 @@
       max-width: 600px;
       margin: 0 auto;
       width: 100%;
+    }
+
+    /* Home Screen Styles */
+    .home-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      width: 100%;
+      gap: 16px;
+      padding-bottom: 40px;
+    }
+
+    .menu-btn {
+      background-color: #ffffff;
+      border: 2px solid #e0d8e8;
+      border-radius: 16px;
+      padding: 16px 24px;
+      width: 100%;
+      max-width: 300px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: #1c1b1f;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      transition: transform 0.15s, border-color 0.15s, background-color 0.15s;
+    }
+
+    .menu-btn:hover {
+      transform: translateY(-2px);
+      border-color: #6750a4;
+      background-color: #fcfbfe;
+    }
+
+    /* Game View Container */
+    .game-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      width: 100%;
+    }
+
+    .game-view.active {
+      display: flex;
     }
 
     /* Timer Display */
@@ -189,7 +255,7 @@
       background-color: #000000;
     }
 
-    /* Bottom Sheet Modal & Central Modal */
+    /* Modals */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -342,30 +408,22 @@
 
   <!-- Top Navigation -->
   <header class="app-bar">
-    <div class="app-title" id="appTitle">Time Trial</div>
+    <button class="home-btn" id="homeBtn" title="Strona główna">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span>HOME</span>
+    </button>
+    <div class="app-title" id="appTitle">braille practice</div>
     <div class="actions">
       <!-- Przełącznik Swipe ON/OFF -->
       <button class="switch-btn" id="swipeToggleBtn" title="Włącz/wyłącz pisanie przeciąganiem">
         <span class="switch-indicator"></span>
         <span>SWIPE</span>
       </button>
-      <!-- Przycisk Ściągawki -->
-      <button class="icon-btn" id="cheatSheetBtn" title="Alfabet Braille'a">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-        </svg>
-      </button>
-      <!-- Przycisk Przełączania Trybów -->
-      <button class="icon-btn" id="toggleModeBtn" title="Przełącz tryb">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="4 7 4 4 20 4 20 7"></polyline>
-          <line x1="9" y1="20" x2="15" y2="20"></line>
-          <line x1="12" y1="4" x2="12" y2="20"></line>
-        </svg>
-      </button>
       <!-- Przycisk Historii Wyników -->
-      <button class="icon-btn" id="historyBtn" title="Historia wyników">
+      <button class="icon-btn" id="historyBtn" title="Historia wyników" style="display: none;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <polyline points="12 6 12 12 16 14"></polyline>
@@ -374,27 +432,39 @@
     </div>
   </header>
 
-  <!-- Main Interface -->
+  <!-- Main Container -->
   <main class="main-container">
-    <div class="timer" id="timerDisplay">0.0s</div>
 
-    <div class="letters-wrap" id="lettersContainer"></div>
+    <!-- Ekran Główny (Menu Start) -->
+    <div class="home-screen" id="homeScreen">
+      <button class="menu-btn" data-mode="practice">words</button>
+      <button class="menu-btn" data-mode="timetrial">time trial</button>
+      <button class="menu-btn" data-mode="cheatsheet">braille alphabet</button>
+    </div>
 
-    <!-- Braille Pad (3x2 Grid) -->
-    <div class="braille-container" id="brailleContainer">
-      <div class="braille-row">
-        <div class="braille-dot" data-dot="1"></div>
-        <div class="braille-dot" data-dot="4"></div>
-      </div>
-      <div class="braille-row">
-        <div class="braille-dot" data-dot="2"></div>
-        <div class="braille-dot" data-dot="5"></div>
-      </div>
-      <div class="braille-row">
-        <div class="braille-dot" data-dot="3"></div>
-        <div class="braille-dot" data-dot="6"></div>
+    <!-- Ekran Gry / Treningu -->
+    <div class="game-view" id="gameView">
+      <div class="timer" id="timerDisplay">0.0s</div>
+
+      <div class="letters-wrap" id="lettersContainer"></div>
+
+      <!-- Braille Pad (3x2 Grid) -->
+      <div class="braille-container" id="brailleContainer">
+        <div class="braille-row">
+          <div class="braille-dot" data-dot="1"></div>
+          <div class="braille-dot" data-dot="4"></div>
+        </div>
+        <div class="braille-row">
+          <div class="braille-dot" data-dot="2"></div>
+          <div class="braille-dot" data-dot="5"></div>
+        </div>
+        <div class="braille-row">
+          <div class="braille-dot" data-dot="3"></div>
+          <div class="braille-dot" data-dot="6"></div>
+        </div>
       </div>
     </div>
+
   </main>
 
   <!-- Score History Sheet -->
@@ -599,7 +669,7 @@
       "YARN", "YETI", "YOGURT", "YOKE", "YOLK", "ZEBRA", "ZERO", "ZIPPER", "ZOO"
     ];
 
-    let isTimeTrialMode = true;
+    let currentMode = 'home';
     let currentTask = "";
     let currentIndex = 0;
     let selectedDots = new Set();
@@ -610,24 +680,26 @@
     let timerInterval = null;
     let timerRunning = false;
     let isMouseDown = false;
-    let isSwipeEnabled = true; // Domyślnie włączone
+    let isSwipeEnabled = true;
 
     const appTitle = document.getElementById('appTitle');
+    const homeScreen = document.getElementById('homeScreen');
+    const gameView = document.getElementById('gameView');
     const timerDisplay = document.getElementById('timerDisplay');
     const lettersContainer = document.getElementById('lettersContainer');
     const dotElements = document.querySelectorAll('.braille-dot');
-    const toggleModeBtn = document.getElementById('toggleModeBtn');
+    const homeBtn = document.getElementById('homeBtn');
     const historyBtn = document.getElementById('historyBtn');
     const historyModal = document.getElementById('historyModal');
     const historyList = document.getElementById('historyList');
     const closeHistoryBtn = document.getElementById('closeHistoryBtn');
 
-    const cheatSheetBtn = document.getElementById('cheatSheetBtn');
     const cheatSheetModal = document.getElementById('cheatSheetModal');
     const closeCheatSheetBtn = document.getElementById('closeCheatSheetBtn');
     const alphabetGrid = document.getElementById('alphabetGrid');
     const brailleContainer = document.getElementById('brailleContainer');
     const swipeToggleBtn = document.getElementById('swipeToggleBtn');
+    const menuCards = document.querySelectorAll('.menu-btn');
 
     function getRandomNoun() {
       return COMMON_ENGLISH_NOUNS[Math.floor(Math.random() * COMMON_ENGLISH_NOUNS.length)];
@@ -636,11 +708,24 @@
     function init() {
       setupEventListeners();
       buildAlphabetCheatSheet();
-      loadNewTask();
     }
 
     function setupEventListeners() {
-      // Przycisk przełącznika Swipe ON/OFF
+      menuCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const mode = card.getAttribute('data-mode');
+          if (mode === 'cheatsheet') {
+            cheatSheetModal.classList.add('open');
+          } else {
+            startGameMode(mode);
+          }
+        });
+      });
+
+      homeBtn.addEventListener('click', () => {
+        goToHomeScreen();
+      });
+
       swipeToggleBtn.addEventListener('click', () => {
         isSwipeEnabled = !isSwipeEnabled;
         if (isSwipeEnabled) {
@@ -649,22 +734,11 @@
           swipeToggleBtn.classList.remove('active');
         }
       });
-      // Stan początkowy: włączone
       swipeToggleBtn.classList.add('active');
-
-      toggleModeBtn.addEventListener('click', () => {
-        isTimeTrialMode = !isTimeTrialMode;
-        appTitle.textContent = isTimeTrialMode ? 'Time Trial' : 'Braille Practice';
-        historyBtn.style.display = isTimeTrialMode ? 'flex' : 'none';
-        timerDisplay.style.visibility = isTimeTrialMode ? 'visible' : 'hidden';
-        stopTimer();
-        loadNewTask();
-      });
 
       historyBtn.addEventListener('click', showHistory);
       closeHistoryBtn.addEventListener('click', () => historyModal.classList.remove('open'));
 
-      cheatSheetBtn.addEventListener('click', () => cheatSheetModal.classList.add('open'));
       closeCheatSheetBtn.addEventListener('click', () => cheatSheetModal.classList.remove('open'));
 
       historyModal.addEventListener('click', (e) => {
@@ -707,10 +781,41 @@
       }, { passive: false });
     }
 
+    function startGameMode(mode) {
+      currentMode = mode;
+      homeScreen.style.display = 'none';
+      gameView.classList.add('active');
+      homeBtn.style.display = 'flex';
+      swipeToggleBtn.style.display = 'flex';
+
+      if (currentMode === 'timetrial') {
+        appTitle.textContent = 'time trial';
+        historyBtn.style.display = 'flex';
+        timerDisplay.style.visibility = 'visible';
+      } else {
+        appTitle.textContent = 'words';
+        historyBtn.style.display = 'none';
+        timerDisplay.style.visibility = 'hidden';
+      }
+
+      loadNewTask();
+    }
+
+    function goToHomeScreen() {
+      currentMode = 'home';
+      stopTimer();
+      homeScreen.style.display = 'flex';
+      gameView.classList.remove('active');
+      homeBtn.style.display = 'none';
+      swipeToggleBtn.style.display = 'none';
+      historyBtn.style.display = 'none';
+      appTitle.textContent = 'braille practice';
+    }
+
     function toggleDotFromElement(dotEl) {
       const dotVal = parseInt(dotEl.getAttribute('data-dot'));
       
-      if (isTimeTrialMode && !timerRunning && currentIndex === 0) {
+      if (currentMode === 'timetrial' && !timerRunning && currentIndex === 0) {
         startTimer();
       }
 
@@ -749,7 +854,7 @@
       currentIndex = 0;
       updateDotsUI();
 
-      if (isTimeTrialMode) {
+      if (currentMode === 'timetrial') {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
         for (let i = letters.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -801,7 +906,7 @@
         currentIndex++;
 
         if (currentIndex >= currentTask.length) {
-          if (isTimeTrialMode) {
+          if (currentMode === 'timetrial') {
             stopTimer();
             const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
             addResult(parseFloat(elapsed));
