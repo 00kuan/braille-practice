@@ -22,6 +22,49 @@
       --bg-dot-active-color: rgba(103, 80, 164, 0.22);
     }
 
+    /* Vibrant yet Pleasant Color Themes */
+    [data-theme="purple"] {
+      --bg-color: #ebdcfd;
+      --btn-bg: #dfc8fb;
+      --btn-border: #ccaaee;
+      --card-border: #d2b3f4;
+    }
+
+    [data-theme="blue"] {
+      --bg-color: #dcebfe;
+      --btn-bg: #c9e0fd;
+      --btn-border: #a8cdfb;
+      --card-border: #b3d6fc;
+    }
+
+    [data-theme="green"] {
+      --bg-color: #d8f5e5;
+      --btn-bg: #c1f0d6;
+      --btn-border: #9be2ba;
+      --card-border: #a9e8c5;
+    }
+
+    [data-theme="yellow"] {
+      --bg-color: #fef8c3;
+      --btn-bg: #fef193;
+      --btn-border: #f8e267;
+      --card-border: #faea7f;
+    }
+
+    [data-theme="orange"] {
+      --bg-color: #ffe8d6;
+      --btn-bg: #ffd5b3;
+      --btn-border: #fbb983;
+      --card-border: #fcc79b;
+    }
+
+    [data-theme="red"] {
+      --bg-color: #fde2e2;
+      --btn-bg: #fcc9c9;
+      --btn-border: #f7a2a2;
+      --card-border: #f9b5b5;
+    }
+
     [data-theme="dark"] {
       --bg-color: #121212;
       --text-color: #e3e3e3;
@@ -59,40 +102,34 @@
       position: relative;
     }
 
-    /* Animated Braille Background */
+    /* Animated Braille Background for Ultrawide displays */
     .bg-braille-container {
       position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
+      top: -125%;
+      left: -125%;
+      width: 350%;
+      height: 350%;
       z-index: 0;
       pointer-events: none;
       display: grid;
-      grid-template-columns: repeat(32, 1fr);
-      gap: 32px;
+      grid-template-columns: repeat(60, 1fr);
+      gap: 28px;
       padding: 40px;
-      animation: rotateBg 140s linear infinite;
+      animation: rotateBg 180s linear infinite;
       opacity: 1;
       transition: opacity 0.5s ease;
     }
 
-    .bg-braille-container.hidden {
-      opacity: 0;
-    }
+    .bg-braille-container.hidden { opacity: 0; }
 
     @keyframes rotateBg {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     .bg-dot {
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background-color: var(--bg-dot-color);
       transition: background-color 0.4s ease, transform 0.4s ease;
@@ -142,11 +179,8 @@
       color: var(--text-color);
     }
 
-    .icon-btn:hover {
-      background-color: rgba(128, 128, 128, 0.1);
-    }
+    .icon-btn:hover { background-color: rgba(128, 128, 128, 0.1); }
 
-    /* Home Button */
     .home-btn {
       display: none;
       align-items: center;
@@ -162,11 +196,8 @@
       transition: background-color 0.2s;
     }
 
-    .home-btn:hover {
-      opacity: 0.85;
-    }
+    .home-btn:hover { opacity: 0.85; }
 
-    /* Swipe Switch Button Styling */
     .switch-btn {
       display: none;
       align-items: center;
@@ -195,11 +226,8 @@
       background-color: #938f99;
     }
 
-    .switch-btn.active .switch-indicator {
-      background-color: #6750a4;
-    }
+    .switch-btn.active .switch-indicator { background-color: #6750a4; }
 
-    /* Pozioma linia oddzielająca nagłówek od reszty */
     .header-divider {
       position: relative;
       z-index: 10;
@@ -217,7 +245,7 @@
       flex-direction: column;
       align-items: center;
       padding: 20px;
-      max-width: 600px;
+      max-width: 650px;
       margin: 0 auto;
       width: 100%;
     }
@@ -275,9 +303,7 @@
       width: 100%;
     }
 
-    .game-view.active {
-      display: flex;
-    }
+    .game-view.active { display: flex; }
 
     /* Braille Dot Grid */
     .braille-container {
@@ -294,7 +320,6 @@
       gap: 20px;
     }
 
-    /* Top Controls in Game (Timer & Hint) - szerokość dopasowana do panelu kropek (68*2 + 20 = 156px) */
     .game-controls-top {
       display: flex;
       align-items: center;
@@ -329,9 +354,7 @@
       width: 100%;
     }
 
-    .hint-btn:hover {
-      border-color: #6750a4;
-    }
+    .hint-btn:hover { border-color: #6750a4; }
 
     /* Letters Grid */
     .letters-wrap {
@@ -345,8 +368,8 @@
     }
 
     .letter-card {
-      width: 44px;
-      height: 52px;
+      width: 48px;
+      height: 56px;
       border-radius: 14px;
       display: flex;
       align-items: center;
@@ -370,12 +393,8 @@
     }
 
     @keyframes pulse {
-      0% {
-        background-color: #ffcdd2;
-      }
-      100% {
-        background-color: #ef9a9a;
-      }
+      0% { background-color: #ffcdd2; }
+      100% { background-color: #ef9a9a; }
     }
 
     .braille-dot {
@@ -389,8 +408,82 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .braille-dot.selected {
-      background-color: var(--dot-selected);
+    .braille-dot.selected { background-color: var(--dot-selected); }
+
+    /* On-Screen Letter Keyboard Layout for Read Braille */
+    .onscreen-keyboard-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 500px;
+      margin-top: 10px;
+    }
+
+    .kb-row {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .kb-key {
+      flex: 1;
+      max-width: 44px;
+      height: 52px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-color);
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: transform 0.08s, background-color 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .kb-key:active {
+      transform: scale(0.92);
+      background-color: var(--btn-bg);
+      border-color: #6750a4;
+    }
+
+    /* Input Display Field for both On-Screen & Physical Keyboard */
+    .keyboard-input-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .keyboard-input-field {
+      width: 100%;
+      padding: 12px 18px;
+      font-size: 24px;
+      font-weight: 800;
+      text-align: center;
+      letter-spacing: 4px;
+      border: 2px solid var(--card-border);
+      border-radius: 16px;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      outline: none;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .keyboard-input-field:focus { border-color: #6750a4; }
+
+    .keyboard-input-field.error {
+      border-color: #e53935;
+      background-color: #ffebee;
     }
 
     /* Modals */
@@ -427,13 +520,9 @@
       transition: transform 0.3s ease, background-color 0.3s;
     }
 
-    .modal-overlay.open .modal-content {
-      transform: translateY(0);
-    }
+    .modal-overlay.open .modal-content { transform: translateY(0); }
 
-    .modal-overlay.center-modal {
-      align-items: center;
-    }
+    .modal-overlay.center-modal { align-items: center; }
 
     .modal-overlay.center-modal .modal-content {
       border-radius: 20px;
@@ -448,11 +537,8 @@
       padding: 24px;
     }
 
-    .modal-overlay.center-modal.open .modal-content {
-      transform: scale(1);
-    }
+    .modal-overlay.center-modal.open .modal-content { transform: scale(1); }
 
-    /* Szerszy modal specjalnie dla ściągawki */
     .modal-overlay.center-modal.cheat-modal-overlay .modal-content {
       max-width: 640px;
       width: 90%;
@@ -508,7 +594,6 @@
       max-height: 80vh;
     }
 
-    /* Układ wielokolumnowy dla szerokiej ściągawki */
     .alphabet-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -521,9 +606,7 @@
     }
 
     @media (max-width: 540px) {
-      .alphabet-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
+      .alphabet-grid { grid-template-columns: repeat(4, 1fr); }
     }
 
     .alphabet-card {
@@ -558,9 +641,7 @@
       background-color: transparent;
     }
 
-    .mini-dot.active {
-      background-color: var(--dot-selected);
-    }
+    .mini-dot.active { background-color: var(--dot-selected); }
 
     .close-btn {
       background: none;
@@ -572,17 +653,49 @@
       opacity: 0.7;
     }
     
-    .close-btn:hover {
-      opacity: 1;
+    .close-btn:hover { opacity: 1; }
+
+    /* Color Selector Options */
+    .theme-options-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .theme-option-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 8px 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-color);
+      transition: transform 0.15s, border-color 0.15s;
+    }
+
+    .theme-option-btn:hover { transform: translateY(-2px); }
+
+    .theme-option-btn.selected { border-color: #6750a4; }
+
+    .theme-color-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.15);
     }
   </style>
 </head>
 <body data-theme="light">
 
-  <!-- Animated Braille Background -->
   <div class="bg-braille-container" id="bgBraille"></div>
 
-  <!-- Top Navigation -->
   <header class="app-bar">
     <button class="home-btn" id="homeBtn" title="Strona główna">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -593,33 +706,28 @@
     </button>
     <div class="app-title" id="appTitle">braille practice</div>
     <div class="actions">
-      <!-- Przycisk Wyciszenia Dźwięku -->
       <button class="icon-btn" id="soundToggleBtn" title="Włącz/wyłącz dźwięk">
         <svg id="soundIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
         </svg>
       </button>
-      <!-- Przycisk Zmiany Motywu (Jasny/Ciemny) -->
-      <button class="icon-btn" id="themeToggleBtn" title="Zmień motyw">
-        <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line>
-          <line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+
+      <button class="icon-btn" id="themePickerBtn" title="Wybierz motyw kolorystyczny">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+          <path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.21-.64-1.67-.38-.43-.6-1-.6-1.58 0-1.24 1.01-2.25 2.25-2.25H18c2.21 0 4-1.79 4-4 0-5.52-4.48-10-10-10z"></path>
         </svg>
       </button>
-      <!-- Przełącznik Swipe ON/OFF -->
+
       <button class="switch-btn" id="swipeToggleBtn" title="Włącz/wyłącz pisanie przeciąganiem">
         <span class="switch-indicator"></span>
         <span>SWIPE</span>
       </button>
-      <!-- Przycisk Historii Wyników -->
+
       <button class="icon-btn" id="historyBtn" title="Historia wyników" style="display: none;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
@@ -629,25 +737,21 @@
     </div>
   </header>
 
-  <!-- Linia rozdzielająca nagłówek od reszty -->
   <div class="header-divider"></div>
 
-  <!-- Main Container -->
   <main class="main-container">
 
-    <!-- Ekran Główny (Menu Start) -->
     <div class="home-screen" id="homeScreen">
       <button class="menu-btn" data-mode="practice">words</button>
+      <button class="menu-btn" data-mode="readbraille">read braille</button>
       <button class="menu-btn" data-mode="timetrial">time trial</button>
       <button class="menu-btn" data-mode="cheatsheet">braille alphabet</button>
       
-      <!-- Przycisk opinii / kontaktu -->
       <a class="menu-btn feedback-btn" href="mailto:braille.practice@gmail.com?subject=Braille%20Practice%20Feedback&body=Hi!%20I%20have%20an%20idea%20to%20improve%20the%20app:%0A%0A">
         Feedback & ideas
       </a>
     </div>
 
-    <!-- Ekran Gry / Treningu -->
     <div class="game-view" id="gameView">
       <div class="game-controls-top">
         <div class="timer" id="timerDisplay">0.0s</div>
@@ -659,7 +763,7 @@
 
       <div class="letters-wrap" id="lettersContainer"></div>
 
-      <!-- Braille Pad (3x2 Grid) -->
+      <!-- Braille Pad (3x2 Grid) for Words & Time Trial -->
       <div class="braille-container" id="brailleContainer">
         <div class="braille-row">
           <div class="braille-dot" data-dot="1"></div>
@@ -674,11 +778,96 @@
           <div class="braille-dot" data-dot="6"></div>
         </div>
       </div>
+
+      <!-- Input Display Box for Read Braille -->
+      <div class="keyboard-input-container" id="keyboardInputContainer" style="display: none;">
+        <input type="text" class="keyboard-input-field" id="physicalKeyboardInput" placeholder="..." autocomplete="off" autocapitalize="characters" />
+      </div>
+
+      <!-- On-Screen Letter Keyboard Layout (Read Braille Default) -->
+      <div class="onscreen-keyboard-container" id="onscreenKeyboardContainer" style="display: none;">
+        <div class="kb-row">
+          <button class="kb-key" data-key="Q">Q</button>
+          <button class="kb-key" data-key="W">W</button>
+          <button class="kb-key" data-key="E">E</button>
+          <button class="kb-key" data-key="R">R</button>
+          <button class="kb-key" data-key="T">T</button>
+          <button class="kb-key" data-key="Y">Y</button>
+          <button class="kb-key" data-key="U">U</button>
+          <button class="kb-key" data-key="I">I</button>
+          <button class="kb-key" data-key="O">O</button>
+          <button class="kb-key" data-key="P">P</button>
+        </div>
+        <div class="kb-row">
+          <button class="kb-key" data-key="A">A</button>
+          <button class="kb-key" data-key="S">S</button>
+          <button class="kb-key" data-key="D">D</button>
+          <button class="kb-key" data-key="F">F</button>
+          <button class="kb-key" data-key="G">G</button>
+          <button class="kb-key" data-key="H">H</button>
+          <button class="kb-key" data-key="J">J</button>
+          <button class="kb-key" data-key="K">K</button>
+          <button class="kb-key" data-key="L">L</button>
+        </div>
+        <div class="kb-row">
+          <button class="kb-key" data-key="Z">Z</button>
+          <button class="kb-key" data-key="X">X</button>
+          <button class="kb-key" data-key="C">C</button>
+          <button class="kb-key" data-key="V">V</button>
+          <button class="kb-key" data-key="B">B</button>
+          <button class="kb-key" data-key="N">N</button>
+          <button class="kb-key" data-key="M">M</button>
+        </div>
+      </div>
     </div>
 
   </main>
 
-  <!-- Score History Sheet -->
+  <!-- Theme Selector Modal -->
+  <div class="modal-overlay center-modal" id="themeModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" style="margin: 0 auto;">Select Theme</div>
+        <button class="close-btn" id="closeThemeBtn">&times;</button>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="theme-options-grid">
+        <button class="theme-option-btn selected" data-theme-val="light">
+          <div class="theme-color-swatch" style="background-color: #faf7fd;"></div>
+          <span>Light</span>
+        </button>
+        <button class="theme-option-btn" data-theme-val="purple">
+          <div class="theme-color-swatch" style="background-color: #ebdcfd;"></div>
+          <span>Purple</span>
+        </button>
+        <button class="theme-option-btn" data-theme-val="blue">
+          <div class="theme-color-swatch" style="background-color: #dcebfe;"></div>
+          <span>Blue</span>
+        </button>
+        <button class="theme-option-btn" data-theme-val="green">
+          <div class="theme-color-swatch" style="background-color: #d8f5e5;"></div>
+          <span>Green</span>
+        </button>
+        <button class="theme-option-btn" data-theme-val="yellow">
+          <div class="theme-color-swatch" style="background-color: #fef8c3;"></div>
+          <span>Yellow</span>
+        </button>
+        <button class="theme-option-btn" data-theme-val="orange">
+          <div class="theme-color-swatch" style="background-color: #ffe8d6;"></div>
+          <span>Orange</span>
+        </button>
+        <button class="theme-option-btn" data-theme-val="red">
+          <div class="theme-color-swatch" style="background-color: #fde2e2;"></div>
+          <span>Red</span>
+        </button>
+        <button class="theme-option-btn" data-theme-val="dark">
+          <div class="theme-color-swatch" style="background-color: #121212;"></div>
+          <span>Dark</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay center-modal" id="historyModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -691,7 +880,6 @@
     </div>
   </div>
 
-  <!-- Braille Cheat Sheet Modal (Szeroki widget) -->
   <div class="modal-overlay center-modal cheat-modal-overlay" id="cheatSheetModal">
     <div class="modal-content cheat-sheet-content">
       <div class="modal-header">
@@ -703,7 +891,6 @@
     </div>
   </div>
 
-  <!-- Hint Modal (Central Widget for Hint) -->
   <div class="modal-overlay center-modal" id="hintModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -736,7 +923,7 @@
       "ATLANTIS", "ATLAS", "ATTIC", "AUDIENCE", "AUTHOR", "AUTUMN", "AVOCADO", "AWARD", 
       "BABOON", "BABY", "BACK", "BACKPACK", "BACON", "BADGE", "BAG", "BAGEL", 
       "BAKERY", "BALANCE", "BALL", "BALLERINA", "BALLOON", "BAMBOO", "BANANA", "BAND", 
-      "BANDAGE", "BANJO", "BANK", "BARBER", "BARGAYN", "BARK", "BARN", "BARREL", 
+      "BANDAGE", "BANJO", "BANK", "BARBER", "BARGAIN", "BARK", "BARN", "BARREL", 
       "BASEBALL", "BASEMENT", "BASKET", "BASKETBALL", "BAT", "BATH", "BATHROOM", "BATTERY", 
       "BEACH", "BEAK", "BEAN", "BEAR", "BEARD", "BEAST", "BEAT", "BEAUTY", 
       "BEAVER", "BED", "BEDROOM", "BEE", "BEEF", "BEETLE", "BEGGAR", "BEHAVIOR", 
@@ -767,14 +954,14 @@
       "COLLEGE", "COLT", "COMB", "COMET", "COMFORT", "COMIC", "COMMANDER", "COMPANY", 
       "COMPASS", "COMPOSER", "COMPUTER", "CONCERT", "CONE", "CONGA", "CONTAINER", "CONTINENT", 
       "COOK", "COOKIE", "COPPER", "CORAL", "CORD", "CORN", "CORNER", "COSTUME", 
-      "COTTAGE", "COTTON", "COUCH", "COUUGAR", "COUNSELOR", "COUNT", "COUNTRY", "COURT", 
+      "COTTAGE", "COTTON", "COUCH", "COUGAR", "COUNSELOR", "COUNT", "COUNTRY", "COURT", 
       "COUSIN", "COVER", "COW", "COWBOY", "COYOTE", "CRAB", "CRADLE", "CRAFT", 
       "CRANE", "CRATER", "CRAYON", "CREAM", "CREEK", "CRICKET", "CROCODILE", "CROW", 
       "CROWN", "CRUISER", "CRUMB", "CRYSTAL", "CUB", "CUBE", "CUCUMBER", "CUP", 
       "CUPBOARD", "CUPCAKE", "CURTAIN", "CUSHION", "CUSTOMER", "CYLINDER", "CYMBAL", "DAFFODIL", 
       "DAGGER", "DAIRY", "DAISY", "DALE", "DAM", "DANCE", "DANCER", "DANDELION", 
       "DART", "DATABASE", "DATE", "DAUGHTER", "DAY", "DAYLIGHT", "DEER", "DESERT", 
-      "DESK", "DESSERT", "DETECTIVE", "DIAMOND", "DIARY", "DICET", "DICTIONARY", "DINNER", 
+      "DESK", "DESSERT", "DETECTIVE", "DIAMOND", "DIARY", "DICE", "DICTIONARY", "DINNER", 
       "DINOSAUR", "DIPLOMA", "DIRECTOR", "DIRT", "DISC", "DISCO", "DISH", "DISPLAY", 
       "DISTANCE", "DITCH", "DIVER", "DOCK", "DOCTOR", "DOCUMENT", "DOG", "DOLL", 
       "DOLLAR", "DOLPHIN", "DONKEY", "DOOR", "DOORKNOB", "DOORMAT", "DOUGH", "DOUGHNUT", 
@@ -793,7 +980,7 @@
       "FOG", "FOLDER", "FOOD", "FOOT", "FOOTBALL", "FOREST", "FORK", "FORT", 
       "FOUNTAIN", "FOX", "FRAME", "FREEZER", "FRIDGE", "FRIEND", "FROG", "FRUIT", 
       "FUDGE", "FUEL", "FURNACE", "FURNITURE", "GALAXY", "GALLERY", "GAME", "GARAGE", 
-      "GARDEN", "GARDENER", "GARLIC", "GAS", "GASOLINE", "GATE", "GAZELL", "GEAR", 
+      "GARDEN", "GARDENER", "GARLIC", "GAS", "GASOLINE", "GATE", "GAZELLE", "GEAR", 
       "GEESE", "GEM", "GENIE", "GHOST", "GIANT", "GIFT", "GIRAFFE", "GIRL", 
       "GLACIER", "GLASS", "GLASSES", "GLOBE", "GLOVE", "GLUE", "GNOME", "GOAT", 
       "GOBLET", "GOLD", "GOLDFISH", "GOLF", "GONG", "GOOSE", "GORILLA", "GOWN", 
@@ -807,7 +994,7 @@
       "HIVE", "HOBBY", "HOCKEY", "HOE", "HOG", "HOLE", "HOLLY", "HOME", 
       "HONEY", "HONEYBEE", "HOOD", "HOOK", "HORIZON", "HORN", "HORNET", "HORSE", 
       "HOSPITAL", "HOST", "HOTEL", "HOUR", "HOUSE", "HUMMINGBIRD", "HUNTER", "HURRICANE", 
-      "HYENA", "ICE", "ICEBERG", "ICEBOX", "ICEBERG", "ICICLE", "IGLOO", "IMAGE", 
+      "HYENA", "ICE", "ICEBERG", "ICEBOX", "ICICLE", "IGLOO", "IMAGE", 
       "INK", "INSECT", "INSTRUMENT", "INSTRUCTOR", "ISLAND", "IVORY", "IVY", "JACKET", 
       "JAGUAR", "JAM", "JAR", "JAVELIN", "JAW", "JEANS", "JEEP", "JELLY", 
       "JELLYFISH", "JET", "JEWEL", "JEWELRY", "JOURNAL", "JOURNEY", "JUDGE", "JUG", 
@@ -815,11 +1002,11 @@
       "KEYBOARD", "KID", "KING", "KINGFISHER", "KITCHEN", "KITE", "KITTEN", "KIWI", 
       "KNEE", "KNIFE", "KNIGHT", "KNOT", "KOALA", "LABORATORY", "LACE", "LADDER", 
       "LADYBUG", "LAKE", "LAMB", "LAMP", "LAMPPOST", "LAND", "LANDSCAPE", "LANTERN", 
-      "LAPTOP", "LARK", "LASAGNA", "LASER", "LATCH", "LAVA", "LAWN", "LIME", 
-      "LEAF", "LEATHER", "LEMON", "LEMONADE", "LEMUR", "LEOPARD", "LETTER", "LETTUCE", 
+      "LAPTOP", "LARK", "LASAGNA", "LASER", "LATCH", "LAVA", "LAWN", "LEAF", 
+      "LEATHER", "LEMON", "LEMONADE", "LEMUR", "LEOPARD", "LETTER", "LETTUCE", 
       "LIBRARY", "LICORICE", "LID", "LIFE", "LIGHT", "LIGHTHOUSE", "LIGHTNING", "LILAC", 
       "LILY", "LIME", "LION", "LIP", "LIZARD", "LLAMA", "LOBSTER", "LOCK", 
-      "LOCKET", "LOCOMOTIVE", "LOG", "LOLLIPOP", "LUGGAGE", "LUMBER", "UNCH", "LUNCHBOX", 
+      "LOCKET", "LOCOMOTIVE", "LOG", "LOLLIPOP", "LUGGAGE", "LUMBER", "LUNCH", "LUNCHBOX", 
       "LUTE", "LYNX", "MACARONI", "MACHINE", "MAGAZINE", "MAGICIAN", "MAGNET", "MAGPIE", 
       "MAIL", "MAILBOX", "MAZE", "MEADOW", "MEAL", "MEAT", "MEDAL", "MEDICINE", 
       "MELON", "MELODY", "MEMBER", "MEMORY", "MENU", "MERMAID", "METAL", "METEOR", 
@@ -836,7 +1023,7 @@
       "OTTER", "OVEN", "OWL", "OX", "OYSTER", "PACKAGE", "PAD", "PADDLE", 
       "PAGE", "PAGODA", "PAIL", "PAINT", "PAINTER", "PAINTING", "PALACE", "PALM", 
       "PAN", "PANDA", "PANTHER", "PANTS", "PAPER", "PARACHUTE", "PARADE", "PARROT", 
-      "PARSLEY", "PASSENGER", "PASTA", "PASTRY", "PATH", "PAW", "PEACH", "PEACOCKS", 
+      "PARSLEY", "PASSENGER", "PASTA", "PASTRY", "PATH", "PAW", "PEACH", "PEACOCK", 
       "PEANUT", "PEAR", "PEARL", "PEASANT", "PEBBLE", "PELICAN", "PEN", "PENCIL", 
       "PENGUIN", "PENNY", "PEPPER", "PERFUME", "PERSON", "PET", "PETAL", "PHANTOM", 
       "PHEASANT", "PHONE", "PHOTO", "PIANO", "PICKLE", "PIE", "PIG", "PIGEON", 
@@ -851,7 +1038,7 @@
       "QUEEN", "QUILL", "QUILT", "RABBIT", "RACCOON", "RACE", "RACKET", "RADAR", 
       "RADIO", "RADISH", "RAFT", "RAG", "RAIL", "RAILROAD", "RAIN", "RAINBOW", 
       "RAKE", "RAM", "RANCH", "RASPBERRY", "RAT", "RAVEN", "RAY", "RAZOR", 
-      "RECIPE", "RECORD", "REDWOOD", "REEF", "REINITEER", "REPTILE", "RHINO", "RIBBON", 
+      "RECIPE", "RECORD", "REDWOOD", "REEF", "REINDEER", "REPTILE", "RHINO", "RIBBON", 
       "RICE", "RIDER", "RIDGE", "RIFLE", "RING", "RINK", "RIVER", "ROAD", 
       "ROBOT", "ROCK", "ROCKET", "ROOSTER", "ROPE", "ROSE", "RUBY", "RUG", 
       "RULER", "RUNNER", "SADDLE", "SAIL", "SAILOR", "SALAD", "SALMON", "SALT", 
@@ -876,7 +1063,7 @@
       "TABLE", "TABLET", "TADPOLE", "TAIL", "TALENT", "TANK", "TANKER", "TAPE", 
       "TAPESTRY", "TARGET", "TAXI", "TEA", "TEAPOT", "TEACHER", "TEAM", "TELESCOPE", 
       "TELEVISION", "TEMPLE", "TENT", "TENTACLE", "TEXTBOOK", "THEATER", "THERMOMETER", "THIMBLE", 
-      "THRONE", "THUMB", "THUNDER", "TIAERA", "TICKET", "TIGER", "TILE", "TIMBER", 
+      "THRONE", "THUMB", "THUNDER", "TIARA", "TICKET", "TIGER", "TILE", "TIMBER", 
       "TIME", "TIMER", "TIN", "TOAD", "TOAST", "TOASTER", "TOE", "TOMATO", 
       "TOMB", "TONGUE", "TOOL", "TOOTH", "TOOTHBRUSH", "TOOTHPASTE", "TORCH", "TORNADO", 
       "TORPEDO", "TORTOISE", "TOWER", "TOWN", "TOY", "TRACTOR", "TRAIN", "TRAMPOLINE", 
@@ -885,7 +1072,7 @@
       "TWIG", "TWIN", "TYPER", "TYPHOON", "UMBRELLA", "UNICORN", "UNIFORM", "UNIVERSE", 
       "UNIVERSITY", "VACUUM", "VALLEY", "VAMPIRE", "VAN", "VANILLA", "VASE", "VEGETABLE", 
       "VEHICLE", "VELVET", "VENT", "VEST", "VIOLIN", "VOLCANO", "VOLLEYBALL", "VULTURE", 
-      "WAFFER", "WAGON", "WALL", "WALRUS", "WALNUT", "WARDROBE", "WARRIOR", "WASP", 
+      "WAFER", "WAGON", "WALL", "WALRUS", "WALNUT", "WARDROBE", "WARRIOR", "WASP", 
       "WATCH", "WATER", "WATERFALL", "WATERMELON", "WAVE", "WAX", "WEB", "WELL", 
       "WHALE", "WHEAT", "WHEEL", "WHISTLE", "WIND", "WINDMILL", "WINDOW", "WINE", 
       "WING", "WINTER", "WIRE", "WITCH", "WOLF", "WOOD", "WOODPECKER", "WOOL", 
@@ -907,6 +1094,7 @@
     let isSoundEnabled = true;
 
     let touchedInCurrentDrag = new Set();
+    let lastKeyTime = 0; // Blokada powtarzania kliknięć
 
     let bgDotsArray = [];
     let bgAnimationInterval = null;
@@ -957,9 +1145,10 @@
     const closeCheatSheetBtn = document.getElementById('closeCheatSheetBtn');
     const alphabetGrid = document.getElementById('alphabetGrid');
     const brailleContainer = document.getElementById('brailleContainer');
+    const onscreenKeyboardContainer = document.getElementById('onscreenKeyboardContainer');
+    const keyboardInputContainer = document.getElementById('keyboardInputContainer');
+    const physicalKeyboardInput = document.getElementById('physicalKeyboardInput');
     const swipeToggleBtn = document.getElementById('swipeToggleBtn');
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
-    const themeIcon = document.getElementById('themeIcon');
     const soundToggleBtn = document.getElementById('soundToggleBtn');
     const soundIcon = document.getElementById('soundIcon');
     const menuCards = document.querySelectorAll('.menu-btn[data-mode]');
@@ -970,10 +1159,15 @@
     const closeHintBtn = document.getElementById('closeHintBtn');
     const bgBraille = document.getElementById('bgBraille');
 
+    const themePickerBtn = document.getElementById('themePickerBtn');
+    const themeModal = document.getElementById('themeModal');
+    const closeThemeBtn = document.getElementById('closeThemeBtn');
+    const themeOptionBtns = document.querySelectorAll('.theme-option-btn');
+
     function createBackgroundBraille() {
       bgBraille.innerHTML = '';
       bgDotsArray = [];
-      const dotsCount = 800; // Liczba kropek w wielkiej siatce tła
+      const dotsCount = 2700;
 
       for (let i = 0; i < dotsCount; i++) {
         const dot = document.createElement('div');
@@ -989,7 +1183,7 @@
       if (bgAnimationInterval) clearInterval(bgAnimationInterval);
       bgAnimationInterval = setInterval(() => {
         if (bgDotsArray.length === 0) return;
-        for (let i = 0; i < 18; i++) {
+        for (let i = 0; i < 28; i++) {
           const randomIndex = Math.floor(Math.random() * bgDotsArray.length);
           const dot = bgDotsArray[randomIndex];
           if (dot) {
@@ -1015,6 +1209,20 @@
       buildAlphabetCheatSheet();
     }
 
+    function updateControlsVisibility() {
+      if (currentMode === 'readbraille') {
+        brailleContainer.style.display = 'none';
+        swipeToggleBtn.style.display = 'none';
+        keyboardInputContainer.style.display = 'flex';
+        onscreenKeyboardContainer.style.display = 'flex';
+      } else {
+        keyboardInputContainer.style.display = 'none';
+        onscreenKeyboardContainer.style.display = 'none';
+        brailleContainer.style.display = 'flex';
+        swipeToggleBtn.style.display = 'flex';
+      }
+    }
+
     function setupEventListeners() {
       soundToggleBtn.addEventListener('click', () => {
         isSoundEnabled = !isSoundEnabled;
@@ -1028,16 +1236,31 @@
         }
       });
 
-      themeToggleBtn.addEventListener('click', () => {
+      themePickerBtn.addEventListener('click', () => {
         playClickSound();
-        const currentTheme = document.body.getAttribute('data-theme');
-        if (currentTheme === 'light') {
-          document.body.setAttribute('data-theme', 'dark');
-          themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
-        } else {
-          document.body.setAttribute('data-theme', 'light');
-          themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
-        }
+        themeModal.classList.add('open');
+      });
+
+      closeThemeBtn.addEventListener('click', () => {
+        playClickSound();
+        themeModal.classList.remove('open');
+      });
+
+      themeOptionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          playClickSound();
+          const themeVal = btn.getAttribute('data-theme-val');
+          if (themeVal === 'light') {
+            document.body.removeAttribute('data-theme');
+          } else {
+            document.body.setAttribute('data-theme', themeVal);
+          }
+          
+          themeOptionBtns.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          
+          themeModal.classList.remove('open');
+        });
       });
 
       menuCards.forEach(card => {
@@ -1067,13 +1290,71 @@
         }
       });
 
+      // Global Keydown Handler for physical keyboard input
+      window.addEventListener('keydown', (e) => {
+        if (currentMode !== 'readbraille') return;
+        
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+        const key = e.key.toUpperCase();
+        if (key.length === 1 && key >= 'A' && key <= 'Z') {
+          handleCharacterInput(key);
+        }
+      });
+
+      // Handle On-Screen Keyboard Clicks (zabezpieczone przed zdarzeniami touchstart + click)
+      document.querySelectorAll('.kb-key').forEach(keyBtn => {
+        keyBtn.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          const char = keyBtn.getAttribute('data-key');
+          handleCharacterInput(char);
+        }, { passive: false });
+
+        keyBtn.addEventListener('click', (e) => {
+          // Jeśli urządzenie obsługuje dotyk, touchend już obsłużył kliknięcie
+          if (e.detail === 0) return; // kliknięcie klawiatury ekranowej lub syntetyczne
+          const char = keyBtn.getAttribute('data-key');
+          handleCharacterInput(char);
+        });
+      });
+
+      // Handle Physical Keyboard Input in the text field
+      physicalKeyboardInput.addEventListener('input', () => {
+        if (currentMode !== 'readbraille') return;
+        
+        let enteredText = physicalKeyboardInput.value.toUpperCase();
+        physicalKeyboardInput.value = enteredText;
+
+        const targetLetter = currentTask[currentIndex];
+        if (!targetLetter) return;
+
+        const lastTypedChar = enteredText.slice(-1);
+
+        if (lastTypedChar === targetLetter) {
+          playClickSound();
+          currentIndex++;
+          
+          if (currentIndex >= currentTask.length) {
+            loadNewTask();
+          } else {
+            renderLetters();
+          }
+        } else if (enteredText.length > currentIndex) {
+          physicalKeyboardInput.classList.add('error');
+          setTimeout(() => {
+            physicalKeyboardInput.classList.remove('error');
+            physicalKeyboardInput.value = currentTask.slice(0, currentIndex).join('');
+          }, 300);
+        }
+      });
+
       historyBtn.addEventListener('click', () => { playClickSound(); showHistory(); });
       closeHistoryBtn.addEventListener('click', () => { playClickSound(); historyModal.classList.remove('open'); });
       closeCheatSheetBtn.addEventListener('click', () => { playClickSound(); cheatSheetModal.classList.remove('open'); });
 
       hintBtn.addEventListener('click', () => {
         playClickSound();
-        if (currentMode !== 'practice') return;
+        if (currentMode !== 'practice' && currentMode !== 'readbraille') return;
         const targetLetter = currentTask[currentIndex];
         const correctDots = BRAILLE_ALPHABET[targetLetter] || [];
 
@@ -1098,6 +1379,10 @@
 
       hintModal.addEventListener('click', (e) => {
         if (e.target === hintModal) hintModal.classList.remove('open');
+      });
+
+      themeModal.addEventListener('click', (e) => {
+        if (e.target === themeModal) themeModal.classList.remove('open');
       });
 
       historyModal.addEventListener('click', (e) => {
@@ -1158,7 +1443,6 @@
       homeScreen.style.display = 'none';
       gameView.classList.add('active');
       homeBtn.style.display = 'flex';
-      swipeToggleBtn.style.display = 'flex';
       bgBraille.classList.add('hidden');
 
       if (currentMode === 'timetrial') {
@@ -1166,6 +1450,11 @@
         historyBtn.style.display = 'flex';
         timerDisplay.style.display = 'block';
         hintBtn.style.display = 'none';
+      } else if (currentMode === 'readbraille') {
+        appTitle.textContent = 'read braille';
+        historyBtn.style.display = 'none';
+        timerDisplay.style.display = 'none';
+        hintBtn.style.display = 'flex';
       } else {
         appTitle.textContent = 'words';
         historyBtn.style.display = 'none';
@@ -1173,6 +1462,7 @@
         hintBtn.style.display = 'flex';
       }
 
+      updateControlsVisibility();
       loadNewTask();
     }
 
@@ -1183,6 +1473,9 @@
       gameView.classList.remove('active');
       homeBtn.style.display = 'none';
       swipeToggleBtn.style.display = 'none';
+      keyboardInputContainer.style.display = 'none';
+      onscreenKeyboardContainer.style.display = 'none';
+      brailleContainer.style.display = 'flex';
       historyBtn.style.display = 'none';
       bgBraille.classList.remove('hidden');
       appTitle.textContent = 'braille practice';
@@ -1210,6 +1503,35 @@
 
       updateDotsUI();
       checkAnswer();
+    }
+
+    function handleCharacterInput(char) {
+      // Blokada szybkiego podwójnego kliknięcia (poniżej 120 ms)
+      const now = Date.now();
+      if (now - lastKeyTime < 120) return;
+      lastKeyTime = now;
+
+      const targetLetter = currentTask[currentIndex];
+      if (!targetLetter) return;
+
+      if (char === targetLetter) {
+        playClickSound();
+        currentIndex++;
+        physicalKeyboardInput.value = currentTask.slice(0, currentIndex).join('');
+        
+        if (currentIndex >= currentTask.length) {
+          loadNewTask();
+        } else {
+          renderLetters();
+        }
+      } else {
+        physicalKeyboardInput.value = currentTask.slice(0, currentIndex).join('') + char;
+        physicalKeyboardInput.classList.add('error');
+        setTimeout(() => {
+          physicalKeyboardInput.classList.remove('error');
+          physicalKeyboardInput.value = currentTask.slice(0, currentIndex).join('');
+        }, 300);
+      }
     }
 
     function buildAlphabetCheatSheet() {
@@ -1241,6 +1563,7 @@
       currentIndex = 0;
       selectedDots.clear();
       updateDotsUI();
+      physicalKeyboardInput.value = '';
       renderLetters();
       
       if (currentMode === 'timetrial') {
@@ -1252,14 +1575,35 @@
     function renderLetters() {
       lettersContainer.innerHTML = '';
       for (let i = 0; i < currentTask.length; i++) {
+        const char = currentTask[i];
         const card = document.createElement('div');
         card.className = 'letter-card';
-        card.textContent = currentTask[i];
-        if (i === currentIndex) {
-          card.classList.add('active');
-        } else if (i < currentIndex) {
-          card.classList.add('completed');
+
+        if (currentMode === 'readbraille') {
+          const dots = BRAILLE_ALPHABET[char] || [];
+          let miniBrailleHtml = '<div class="mini-braille">';
+          const dotPositions = [1, 4, 2, 5, 3, 6];
+          dotPositions.forEach(p => {
+            const isActive = dots.includes(p) ? 'active' : '';
+            miniBrailleHtml += `<div class="mini-dot ${isActive}"></div>`;
+          });
+          miniBrailleHtml += '</div>';
+          card.innerHTML = miniBrailleHtml;
+
+          if (i < currentIndex) {
+            card.classList.add('completed');
+          } else if (i === currentIndex) {
+            card.classList.add('active');
+          }
+        } else {
+          card.textContent = char;
+          if (i === currentIndex) {
+            card.classList.add('active');
+          } else if (i < currentIndex) {
+            card.classList.add('completed');
+          }
         }
+
         lettersContainer.appendChild(card);
       }
     }
@@ -1276,6 +1620,8 @@
     }
 
     function checkAnswer() {
+      if (currentMode === 'readbraille') return;
+
       const targetLetter = currentTask[currentIndex];
       const correctDots = BRAILLE_ALPHABET[targetLetter];
 
