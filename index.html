@@ -1,32 +1,33 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>braille practice</title>
   
-  <!-- Firebase SDK (v10) -->
+  <!-- Firebase SDK (v10) with your configuration -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-   const firebaseConfig = {
-  apiKey: "AIzaSyA1YtWKBjgCixKJhF3WQNrmHWWPexU5whQ",
-  authDomain: "braille-practice.firebaseapp.com",
-  projectId: "braille-practice",
-  storageBucket: "braille-practice.firebasestorage.app",
-  messagingSenderId: "349605647533",
-  appId: "1:349605647533:web:c300867a87ea3962cca224",
-  measurementId: "G-DJ66JFNFG4"
-};
+    // --- YOUR FIREBASE CONFIGURATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyA1YtWKBjgCixKJhF3WQNrmHWWPexU5whQ",
+      authDomain: "braille-practice.firebaseapp.com",
+      projectId: "braille-practice",
+      storageBucket: "braille-practice.firebasestorage.app",
+      messagingSenderId: "349605647533",
+      appId: "1:349605647533:web:c300867a87ea3962cca224",
+      measurementId: "G-DJ66JFNFG4"
+    };
 
-    // Inicjalizacja Firebase
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Ekspozycja zmiennych do globalnego skryptu
+    // Expose variables to global script
     window.fbAuth = auth;
     window.fbDb = db;
     window.fbMethods = {
@@ -790,7 +791,7 @@
   <div class="bg-braille-container" id="bgBraille"></div>
 
   <header class="app-bar">
-    <button class="home-btn" id="homeBtn" title="Strona główna">
+    <button class="home-btn" id="homeBtn" title="Home page">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
         <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -799,20 +800,20 @@
     </button>
     <div class="app-title" id="appTitle">braille practice</div>
     <div class="actions">
-      <!-- Przycisk konta -->
-      <button class="switch-btn active" id="accountBtn" title="Zaloguj się / Konto" style="display: flex;">
+      <!-- Account button -->
+      <button class="switch-btn active" id="accountBtn" title="Sign in / Account" style="display: flex;">
         <span class="switch-indicator" id="authIndicator"></span>
-        <span id="accountBtnText">KONTO</span>
+        <span id="accountBtnText">ACCOUNT</span>
       </button>
 
-      <button class="icon-btn" id="soundToggleBtn" title="Włącz/wyłącz dźwięk">
+      <button class="icon-btn" id="soundToggleBtn" title="Toggle sound">
         <svg id="soundIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
         </svg>
       </button>
 
-      <button class="icon-btn" id="themePickerBtn" title="Wybierz motyw kolorystyczny">
+      <button class="icon-btn" id="themePickerBtn" title="Select color theme">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
           <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
@@ -822,12 +823,12 @@
         </svg>
       </button>
 
-      <button class="switch-btn" id="swipeToggleBtn" title="Włącz/wyłącz pisanie przeciąganiem">
+      <button class="switch-btn" id="swipeToggleBtn" title="Toggle swipe input">
         <span class="switch-indicator"></span>
         <span>SWIPE</span>
       </button>
 
-      <button class="icon-btn" id="historyBtn" title="Historia wyników" style="display: none;">
+      <button class="icon-btn" id="historyBtn" title="Score history" style="display: none;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <polyline points="12 6 12 12 16 14"></polyline>
@@ -854,7 +855,7 @@
     <div class="game-view" id="gameView">
       <div class="game-controls-top">
         <div class="timer" id="timerDisplay">0.0s</div>
-        <button class="hint-btn" id="hintBtn" title="Pokaż podpowiedź dla aktualnej litery">
+        <button class="hint-btn" id="hintBtn" title="Show hint for current letter">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
           <span>Hint</span>
         </button>
@@ -922,11 +923,11 @@
 
   </main>
 
-  <!-- Auth Modal (Logowanie / Rejestracja / Reset Hasła) -->
+  <!-- Auth Modal (Login / Registration / Password Reset) -->
   <div class="modal-overlay center-modal" id="authModal">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title" style="margin: 0 auto;" id="authModalTitle">Konto użytkownika</div>
+        <div class="modal-title" style="margin: 0 auto;" id="authModalTitle">User Account</div>
         <button class="close-btn" id="closeAuthBtn">&times;</button>
       </div>
       <div class="modal-divider"></div>
@@ -934,20 +935,20 @@
       <div id="loggedOutView" style="width: 100%;">
         <div class="auth-error" id="authError"></div>
         <div class="auth-success" id="authSuccess"></div>
-        <input type="email" id="authEmail" class="auth-input" placeholder="Adres e-mail" />
-        <input type="password" id="authPassword" class="auth-input" placeholder="Hasło" />
+        <input type="email" id="authEmail" class="auth-input" placeholder="Email address" />
+        <input type="password" id="authPassword" class="auth-input" placeholder="Password" />
         
-        <button class="forgot-password-btn" id="forgotPasswordBtn">Zapomniałeś hasła?</button>
+        <button class="forgot-password-btn" id="forgotPasswordBtn">Forgot password?</button>
 
-        <button class="menu-btn" id="loginBtn" style="max-width: 100%; margin-bottom: 8px; background: #6750a4; color: white;">Zaloguj się</button>
-        <button class="menu-btn" id="registerBtn" style="max-width: 100%;">Zarejestruj się</button>
+        <button class="menu-btn" id="loginBtn" style="max-width: 100%; margin-bottom: 8px; background: #6750a4; color: white;">Log in</button>
+        <button class="menu-btn" id="registerBtn" style="max-width: 100%;">Sign up</button>
       </div>
 
       <div id="loggedInView" style="width: 100%; display: none; text-align: center;">
-        <p style="margin-bottom: 16px; font-size: 15px;">Zalogowany jako:<br><strong id="userEmailDisplay" style="color: #6750a4;"></strong></p>
-        <button class="menu-btn" id="logoutBtn" style="max-width: 100%; background: #6750a4; color: white; margin-bottom: 8px;">Wyloguj się</button>
+        <p style="margin-bottom: 16px; font-size: 15px;">Logged in as:<br><strong id="userEmailDisplay" style="color: #6750a4;"></strong></p>
+        <button class="menu-btn" id="logoutBtn" style="max-width: 100%; background: #6750a4; color: white; margin-bottom: 8px;">Log out</button>
         <div>
-          <button class="delete-account-btn" id="deleteAccountBtn">Usuń konto trwale</button>
+          <button class="delete-account-btn" id="deleteAccountBtn">Delete account permanently</button>
         </div>
       </div>
     </div>
@@ -1377,7 +1378,7 @@
               loadUserDataFromCloud();
             } else {
               currentUser = null;
-              accountBtnText.textContent = 'KONTO';
+              accountBtnText.textContent = 'ACCOUNT';
               authIndicator.style.backgroundColor = '#938f99';
               loggedOutView.style.display = 'block';
               loggedInView.style.display = 'none';
@@ -1398,7 +1399,7 @@
         const userRef = doc(window.fbDb, "users", currentUser.uid);
         await setDoc(userRef, { history: history }, { merge: true });
       } catch (e) {
-        console.error("Błąd zapisu wyników w chmurze:", e);
+        console.error("Error saving scores to cloud:", e);
       }
     }
 
@@ -1412,7 +1413,7 @@
           history = docSnap.data().history;
         }
       } catch (e) {
-        console.error("Błąd pobierania wyników z chmury:", e);
+        console.error("Error fetching scores from cloud:", e);
       }
     }
 
@@ -1454,7 +1455,7 @@
           authEmail.value = '';
           authPassword.value = '';
         } catch (err) {
-          authError.textContent = "Błąd logowania: " + err.message;
+          authError.textContent = "Login error: " + err.message;
           authError.style.display = 'block';
         }
       });
@@ -1470,7 +1471,7 @@
           authEmail.value = '';
           authPassword.value = '';
         } catch (err) {
-          authError.textContent = "Błąd rejestracji: " + err.message;
+          authError.textContent = "Registration error: " + err.message;
           authError.style.display = 'block';
         }
       });
@@ -1482,7 +1483,7 @@
 
         const emailVal = authEmail.value.trim();
         if (!emailVal) {
-          authError.textContent = "Wpisz swój e-mail w polu powyżej, aby móc zresetować hasło.";
+          authError.textContent = "Please enter your email address in the field above to reset your password.";
           authError.style.display = 'block';
           return;
         }
@@ -1490,10 +1491,10 @@
         try {
           const { sendPasswordResetEmail } = window.fbMethods;
           await sendPasswordResetEmail(window.fbAuth, emailVal);
-          authSuccess.textContent = "Instrukcje resetowania hasła zostały wysłane na podany adres e-mail!";
+          authSuccess.textContent = "Password reset instructions have been sent to your email!";
           authSuccess.style.display = 'block';
         } catch (err) {
-          authError.textContent = "Nie udało się wysłać linku: " + err.message;
+          authError.textContent = "Failed to send reset email: " + err.message;
           authError.style.display = 'block';
         }
       });
@@ -1513,7 +1514,7 @@
         playClickSound();
         if (!currentUser) return;
 
-        const confirmDelete = confirm("Czy na pewno chcesz usunąć swoje konto? Wszystkie Twoje zapisane wyniki zostaną bezpowrotnie usunięte.");
+        const confirmDelete = confirm("Are you sure you want to delete your account? All your saved scores will be permanently lost.");
         if (!confirmDelete) return;
 
         try {
@@ -1526,10 +1527,10 @@
 
           await deleteUser(currentUser);
           
-          alert("Twoje konto zostało pomyślnie usunięte.");
+          alert("Your account has been successfully deleted.");
           authModal.classList.remove('open');
         } catch (err) {
-          alert("Wystąpił błąd podczas usuwania konta. Jeśli nie logowałeś się od dłuższego czasu, zaloguj się ponownie i spróbuj jeszcze raz.\n\n" + err.message);
+          alert("An error occurred while deleting your account. If you haven't logged in recently, please log in again and retry.\n\n" + err.message);
         }
       });
 
@@ -1960,7 +1961,7 @@
       historyList.innerHTML = '';
       if (history.length === 0) {
         bestScoreBanner.textContent = 'Best: --';
-        historyList.innerHTML = '<li class="history-item" style="color: #888;">Brak wyników. Zaloguj się, aby zapisać.</li>';
+        historyList.innerHTML = '<li class="history-item" style="color: #888;">No scores yet. Log in to save yours.</li>';
       } else {
         const bestTime = Math.min(...history);
         bestScoreBanner.textContent = `Best: ${bestTime.toFixed(1)}s`;
