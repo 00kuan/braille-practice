@@ -11,6 +11,7 @@
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // --- YOUR FIREBASE CONFIGURATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyA1YtWKBjgCixKJhF3WQNrmHWWPexU5whQ",
       authDomain: "braille-practice.firebaseapp.com",
@@ -98,10 +99,34 @@
     }
 
     [data-theme="red"] {
-      --bg-color: #fde2e2;
-      --btn-bg: #fcc9c9;
-      --btn-border: #f7a2a2;
-      --card-border: #f9b5b5;
+      --bg-color: #fca5a5;
+      --btn-bg: #f87171;
+      --btn-border: #ef4444;
+      --card-border: #dc2626;
+      --text-color: #450a0a;
+      --card-bg: #fef2f2;
+      --btn-text: #450a0a;
+      --dot-border: #450a0a;
+      --dot-selected: #450a0a;
+    }
+
+    [data-theme="pink"] {
+      --bg-color: #fae1ed;
+      --btn-bg: #f7c5de;
+      --btn-border: #f1a3cb;
+      --card-border: #f3b2d3;
+    }
+
+    [data-theme="brown"] {
+      --bg-color: #d7b49e;
+      --btn-bg: #c49a81;
+      --btn-border: #b08266;
+      --card-border: #9c6c4f;
+      --text-color: #3d1c0b;
+      --card-bg: #f4eae1;
+      --btn-text: #3d1c0b;
+      --dot-border: #3d1c0b;
+      --dot-selected: #3d1c0b;
     }
 
     [data-theme="dark"] {
@@ -569,7 +594,7 @@
     .modal-overlay.center-modal .modal-content {
       border-radius: 20px;
       transform: scale(0.9);
-      max-width: 420px;
+      max-width: 480px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.3);
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, background-color 0.3s;
       display: flex;
@@ -751,13 +776,17 @@
     }
     .delete-account-btn:hover { opacity: 1; }
 
-    /* Color Selector Options */
+    /* Color Selector Options - 2 rows (5 columns) */
     .theme-options-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
       width: 100%;
       margin-top: 8px;
+    }
+
+    @media (max-width: 500px) {
+      .theme-options-grid { grid-template-columns: repeat(3, 1fr); }
     }
 
     .theme-option-btn {
@@ -947,7 +976,16 @@
       </div>
 
       <div id="loggedInView" style="width: 100%; display: none; text-align: center;">
-        <p style="margin-bottom: 16px; font-size: 15px;">Logged in as:<br><strong id="userEmailDisplay" style="color: #6750a4;"></strong></p>
+        <div class="auth-error" id="authErrorLoggedIn"></div>
+        <div class="auth-success" id="authSuccessLoggedIn"></div>
+        
+        <p style="margin-bottom: 8px; font-size: 14px; color: #666;">Logged in as: <strong id="userEmailDisplay" style="color: var(--text-color);"></strong></p>
+        
+        <div style="margin-bottom: 16px; width: 100%;">
+          <input type="text" id="editUsernameInput" class="auth-input" placeholder="Custom Username" style="text-align: center;" />
+          <button class="menu-btn" id="saveUsernameBtn" style="max-width: 100%; font-size: 14px; padding: 10px; margin-top: 4px;">Save Username</button>
+        </div>
+
         <button class="menu-btn" id="logoutBtn" style="max-width: 100%; background: #6750a4; color: white; margin-bottom: 8px;">Log out</button>
         <div>
           <button class="delete-account-btn" id="deleteAccountBtn">Delete account permanently</button>
@@ -990,8 +1028,16 @@
           <span>Orange</span>
         </button>
         <button class="theme-option-btn" data-theme-val="red">
-          <div class="theme-color-swatch" style="background-color: #fde2e2;"></div>
+          <div class="theme-color-swatch" style="background-color: #fca5a5;"></div>
           <span>Red</span>
+        </button>
+        <button class="theme-option-btn" data-theme-val="pink">
+          <div class="theme-color-swatch" style="background-color: #fae1ed;"></div>
+          <span>Pink</span>
+        </button>
+        <button class="theme-option-btn" data-theme-val="brown">
+          <div class="theme-color-swatch" style="background-color: #d7b49e;"></div>
+          <span>Brown</span>
         </button>
         <button class="theme-option-btn" data-theme-val="dark">
           <div class="theme-color-swatch" style="background-color: #121212;"></div>
@@ -1218,6 +1264,7 @@
     let currentIndex = 0;
     let selectedDots = new Set();
     let history = [];
+    let currentUsername = "";
 
     let startTime = null;
     let timerInterval = null;
@@ -1315,7 +1362,11 @@
     const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
     const authError = document.getElementById('authError');
     const authSuccess = document.getElementById('authSuccess');
+    const authErrorLoggedIn = document.getElementById('authErrorLoggedIn');
+    const authSuccessLoggedIn = document.getElementById('authSuccessLoggedIn');
     const userEmailDisplay = document.getElementById('userEmailDisplay');
+    const editUsernameInput = document.getElementById('editUsernameInput');
+    const saveUsernameBtn = document.getElementById('saveUsernameBtn');
 
     function createBackgroundBraille() {
       bgBraille.innerHTML = '';
@@ -1369,17 +1420,17 @@
           clearInterval(checkInterval);
           const { onAuthStateChanged } = window.fbMethods;
 
-          onAuthStateChanged(window.fbAuth, (user) => {
+          onAuthStateChanged(window.fbAuth, async (user) => {
             if (user) {
               currentUser = user;
-              accountBtnText.textContent = user.email.split('@')[0];
               authIndicator.style.backgroundColor = '#4caf50';
               userEmailDisplay.textContent = user.email;
               loggedOutView.style.display = 'none';
               loggedInView.style.display = 'block';
-              loadUserDataFromCloud();
+              await loadUserDataFromCloud();
             } else {
               currentUser = null;
+              currentUsername = "";
               accountBtnText.textContent = 'ACCOUNT';
               authIndicator.style.backgroundColor = '#938f99';
               loggedOutView.style.display = 'block';
@@ -1399,7 +1450,7 @@
       try {
         const { doc, setDoc } = window.fbMethods;
         const userRef = doc(window.fbDb, "users", currentUser.uid);
-        await setDoc(userRef, { history: history }, { merge: true });
+        await setDoc(userRef, { history: history, username: currentUsername }, { merge: true });
       } catch (e) {
         console.error("Error saving scores to cloud:", e);
       }
@@ -1411,9 +1462,19 @@
         const { doc, getDoc } = window.fbMethods;
         const userRef = doc(window.fbDb, "users", currentUser.uid);
         const docSnap = await getDoc(userRef);
-        if (docSnap.exists() && docSnap.data().history) {
-          history = docSnap.data().history;
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.history) history = data.history;
+          if (data.username) {
+            currentUsername = data.username;
+          } else {
+            currentUsername = currentUser.email.split('@')[0];
+          }
+        } else {
+          currentUsername = currentUser.email.split('@')[0];
         }
+        accountBtnText.textContent = currentUsername;
+        editUsernameInput.value = currentUsername;
       } catch (e) {
         console.error("Error fetching scores from cloud:", e);
       }
@@ -1438,6 +1499,8 @@
         playClickSound();
         authError.style.display = 'none';
         authSuccess.style.display = 'none';
+        authErrorLoggedIn.style.display = 'none';
+        authSuccessLoggedIn.style.display = 'none';
         authModal.classList.add('open');
       });
 
@@ -1467,14 +1530,52 @@
         authError.style.display = 'none';
         authSuccess.style.display = 'none';
         try {
-          const { createUserWithEmailAndPassword } = window.fbMethods;
-          await createUserWithEmailAndPassword(window.fbAuth, authEmail.value, authPassword.value);
+          const { createUserWithEmailAndPassword, doc, setDoc } = window.fbMethods;
+          const userCredential = await createUserWithEmailAndPassword(window.fbAuth, authEmail.value, authPassword.value);
+          
+          const defaultName = userCredential.user.email.split('@')[0];
+          currentUsername = defaultName;
+
+          if (window.fbDb) {
+            const userRef = doc(window.fbDb, "users", userCredential.user.uid);
+            await setDoc(userRef, { username: defaultName, history: [] }, { merge: true });
+          }
+
           authModal.classList.remove('open');
           authEmail.value = '';
           authPassword.value = '';
         } catch (err) {
           authError.textContent = "Registration error: " + err.message;
           authError.style.display = 'block';
+        }
+      });
+
+      saveUsernameBtn.addEventListener('click', async () => {
+        playClickSound();
+        authErrorLoggedIn.style.display = 'none';
+        authSuccessLoggedIn.style.display = 'none';
+
+        const newName = editUsernameInput.value.trim();
+        if (!newName) {
+          authErrorLoggedIn.textContent = "Username cannot be empty.";
+          authErrorLoggedIn.style.display = 'block';
+          return;
+        }
+
+        currentUsername = newName;
+        accountBtnText.textContent = newName;
+
+        if (currentUser && window.fbDb) {
+          try {
+            const { doc, setDoc } = window.fbMethods;
+            const userRef = doc(window.fbDb, "users", currentUser.uid);
+            await setDoc(userRef, { username: newName }, { merge: true });
+            authSuccessLoggedIn.textContent = "Username updated successfully!";
+            authSuccessLoggedIn.style.display = 'block';
+          } catch (err) {
+            authErrorLoggedIn.textContent = "Error saving username: " + err.message;
+            authErrorLoggedIn.style.display = 'block';
+          }
         }
       });
 
