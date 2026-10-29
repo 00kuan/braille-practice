@@ -1094,7 +1094,7 @@
     let isSoundEnabled = true;
 
     let touchedInCurrentDrag = new Set();
-    let lastKeyTime = 0; // Blokada powtarzania kliknięć
+    let lastKeyTime = 0; // Globalna blokada szybkiego powtarzania kliknięć
 
     let bgDotsArray = [];
     let bgAnimationInterval = null;
@@ -1290,18 +1290,6 @@
         }
       });
 
-      // Global Keydown Handler for physical keyboard input
-      window.addEventListener('keydown', (e) => {
-        if (currentMode !== 'readbraille') return;
-        
-        if (e.ctrlKey || e.altKey || e.metaKey) return;
-
-        const key = e.key.toUpperCase();
-        if (key.length === 1 && key >= 'A' && key <= 'Z') {
-          handleCharacterInput(key);
-        }
-      });
-
       // Handle On-Screen Keyboard Clicks (zabezpieczone przed zdarzeniami touchstart + click)
       document.querySelectorAll('.kb-key').forEach(keyBtn => {
         keyBtn.addEventListener('touchend', (e) => {
@@ -1311,35 +1299,33 @@
         }, { passive: false });
 
         keyBtn.addEventListener('click', (e) => {
-          // Jeśli urządzenie obsługuje dotyk, touchend już obsłużył kliknięcie
-          if (e.detail === 0) return; // kliknięcie klawiatury ekranowej lub syntetyczne
+          if (e.detail === 0) return;
           const char = keyBtn.getAttribute('data-key');
           handleCharacterInput(char);
         });
       });
 
-      // Handle Physical Keyboard Input in the text field
+      // Handle Physical Keyboard Input cleanly via single event listener
       physicalKeyboardInput.addEventListener('input', () => {
         if (currentMode !== 'readbraille') return;
         
         let enteredText = physicalKeyboardInput.value.toUpperCase();
-        physicalKeyboardInput.value = enteredText;
+        if (enteredText.length === 0) return;
+
+        // Pobierz ostatni wpisany znak
+        const lastTypedChar = enteredText.slice(-1);
+        
+        // Natychmiast zresetuj pole tekstowe do aktualnego postępu (zapobiega fizycznemu powielaniu znaków)
+        physicalKeyboardInput.value = currentTask.slice(0, currentIndex).join('');
 
         const targetLetter = currentTask[currentIndex];
         if (!targetLetter) return;
 
-        const lastTypedChar = enteredText.slice(-1);
-
         if (lastTypedChar === targetLetter) {
-          playClickSound();
-          currentIndex++;
-          
-          if (currentIndex >= currentTask.length) {
-            loadNewTask();
-          } else {
-            renderLetters();
-          }
-        } else if (enteredText.length > currentIndex) {
+          handleCharacterInput(lastTypedChar);
+        } else {
+          // Błędna litera
+          physicalKeyboardInput.value = currentTask.slice(0, currentIndex).join('') + lastTypedChar;
           physicalKeyboardInput.classList.add('error');
           setTimeout(() => {
             physicalKeyboardInput.classList.remove('error');
@@ -1506,9 +1492,9 @@
     }
 
     function handleCharacterInput(char) {
-      // Blokada szybkiego podwójnego kliknięcia (poniżej 120 ms)
+      // Blokada szybkiego podwójnego kliknięcia (poniżej 150 ms)
       const now = Date.now();
-      if (now - lastKeyTime < 120) return;
+      if (now - lastKeyTime < 150) return;
       lastKeyTime = now;
 
       const targetLetter = currentTask[currentIndex];
@@ -1569,6 +1555,9 @@
       if (currentMode === 'timetrial') {
         stopTimer();
         timerDisplay.textContent = '0.0s';
+      }
+      if (currentMode === 'readbraille') {
+        physicalKeyboardInput.focus();
       }
     }
 
