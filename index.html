@@ -4,6 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>braille practice</title>
+  
+  <!-- Firebase SDK (v10) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+   const firebaseConfig = {
+  apiKey: "AIzaSyA1YtWKBjgCixKJhF3WQNrmHWWPexU5whQ",
+  authDomain: "braille-practice.firebaseapp.com",
+  projectId: "braille-practice",
+  storageBucket: "braille-practice.firebasestorage.app",
+  messagingSenderId: "349605647533",
+  appId: "1:349605647533:web:c300867a87ea3962cca224",
+  measurementId: "G-DJ66JFNFG4"
+};
+
+    // Inicjalizacja Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Ekspozycja zmiennych do globalnego skryptu
+    window.fbAuth = auth;
+    window.fbDb = db;
+    window.fbMethods = {
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      deleteUser,
+      sendPasswordResetEmail,
+      doc,
+      setDoc,
+      getDoc,
+      deleteDoc
+    };
+  </script>
+
   <style>
     :root {
       --bg-color: #faf7fd;
@@ -655,6 +694,60 @@
     
     .close-btn:hover { opacity: 1; }
 
+    /* Auth Form Elements */
+    .auth-input {
+      width: 100%;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-size: 15px;
+      outline: none;
+    }
+    .auth-input:focus { border-color: #6750a4; }
+    .auth-error {
+      color: #e53935;
+      font-size: 13px;
+      margin-bottom: 10px;
+      display: none;
+    }
+    .auth-success {
+      color: #2e7d32;
+      font-size: 13px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .forgot-password-btn {
+      background: transparent;
+      border: none;
+      color: #6750a4;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      text-decoration: underline;
+      display: block;
+      width: 100%;
+      text-align: right;
+    }
+
+    .delete-account-btn {
+      background: transparent;
+      border: none;
+      color: #e53935;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+      text-decoration: underline;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+    .delete-account-btn:hover { opacity: 1; }
+
     /* Color Selector Options */
     .theme-options-grid {
       display: grid;
@@ -706,6 +799,12 @@
     </button>
     <div class="app-title" id="appTitle">braille practice</div>
     <div class="actions">
+      <!-- Przycisk konta -->
+      <button class="switch-btn active" id="accountBtn" title="Zaloguj się / Konto" style="display: flex;">
+        <span class="switch-indicator" id="authIndicator"></span>
+        <span id="accountBtnText">KONTO</span>
+      </button>
+
       <button class="icon-btn" id="soundToggleBtn" title="Włącz/wyłącz dźwięk">
         <svg id="soundIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
@@ -822,6 +921,37 @@
     </div>
 
   </main>
+
+  <!-- Auth Modal (Logowanie / Rejestracja / Reset Hasła) -->
+  <div class="modal-overlay center-modal" id="authModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" style="margin: 0 auto;" id="authModalTitle">Konto użytkownika</div>
+        <button class="close-btn" id="closeAuthBtn">&times;</button>
+      </div>
+      <div class="modal-divider"></div>
+      
+      <div id="loggedOutView" style="width: 100%;">
+        <div class="auth-error" id="authError"></div>
+        <div class="auth-success" id="authSuccess"></div>
+        <input type="email" id="authEmail" class="auth-input" placeholder="Adres e-mail" />
+        <input type="password" id="authPassword" class="auth-input" placeholder="Hasło" />
+        
+        <button class="forgot-password-btn" id="forgotPasswordBtn">Zapomniałeś hasła?</button>
+
+        <button class="menu-btn" id="loginBtn" style="max-width: 100%; margin-bottom: 8px; background: #6750a4; color: white;">Zaloguj się</button>
+        <button class="menu-btn" id="registerBtn" style="max-width: 100%;">Zarejestruj się</button>
+      </div>
+
+      <div id="loggedInView" style="width: 100%; display: none; text-align: center;">
+        <p style="margin-bottom: 16px; font-size: 15px;">Zalogowany jako:<br><strong id="userEmailDisplay" style="color: #6750a4;"></strong></p>
+        <button class="menu-btn" id="logoutBtn" style="max-width: 100%; background: #6750a4; color: white; margin-bottom: 8px;">Wyloguj się</button>
+        <div>
+          <button class="delete-account-btn" id="deleteAccountBtn">Usuń konto trwale</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Theme Selector Modal -->
   <div class="modal-overlay center-modal" id="themeModal">
@@ -1092,9 +1222,10 @@
     let isMouseDown = false;
     let isSwipeEnabled = false;
     let isSoundEnabled = true;
+    let currentUser = null;
 
     let touchedInCurrentDrag = new Set();
-    let lastKeyTime = 0; // Globalna blokada szybkiego powtarzania kliknięć
+    let lastKeyTime = 0;
 
     let bgDotsArray = [];
     let bgAnimationInterval = null;
@@ -1164,6 +1295,25 @@
     const closeThemeBtn = document.getElementById('closeThemeBtn');
     const themeOptionBtns = document.querySelectorAll('.theme-option-btn');
 
+    // Auth Elements
+    const accountBtn = document.getElementById('accountBtn');
+    const authIndicator = document.getElementById('authIndicator');
+    const accountBtnText = document.getElementById('accountBtnText');
+    const authModal = document.getElementById('authModal');
+    const closeAuthBtn = document.getElementById('closeAuthBtn');
+    const loggedOutView = document.getElementById('loggedOutView');
+    const loggedInView = document.getElementById('loggedInView');
+    const authEmail = document.getElementById('authEmail');
+    const authPassword = document.getElementById('authPassword');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+    const authError = document.getElementById('authError');
+    const authSuccess = document.getElementById('authSuccess');
+    const userEmailDisplay = document.getElementById('userEmailDisplay');
+
     function createBackgroundBraille() {
       bgBraille.innerHTML = '';
       bgDotsArray = [];
@@ -1207,6 +1357,63 @@
       createBackgroundBraille();
       setupEventListeners();
       buildAlphabetCheatSheet();
+      setupFirebaseListeners();
+    }
+
+    function setupFirebaseListeners() {
+      const checkInterval = setInterval(() => {
+        if (window.fbAuth && window.fbMethods) {
+          clearInterval(checkInterval);
+          const { onAuthStateChanged } = window.fbMethods;
+
+          onAuthStateChanged(window.fbAuth, (user) => {
+            if (user) {
+              currentUser = user;
+              accountBtnText.textContent = user.email.split('@')[0];
+              authIndicator.style.backgroundColor = '#4caf50';
+              userEmailDisplay.textContent = user.email;
+              loggedOutView.style.display = 'none';
+              loggedInView.style.display = 'block';
+              loadUserDataFromCloud();
+            } else {
+              currentUser = null;
+              accountBtnText.textContent = 'KONTO';
+              authIndicator.style.backgroundColor = '#938f99';
+              loggedOutView.style.display = 'block';
+              loggedInView.style.display = 'none';
+              history = [];
+            }
+          });
+        }
+      }, 100);
+    }
+
+    async function saveScoreToCloud(time) {
+      history.unshift(parseFloat(time));
+      if (history.length > 10) history.pop();
+
+      if (!currentUser || !window.fbDb) return;
+      try {
+        const { doc, setDoc } = window.fbMethods;
+        const userRef = doc(window.fbDb, "users", currentUser.uid);
+        await setDoc(userRef, { history: history }, { merge: true });
+      } catch (e) {
+        console.error("Błąd zapisu wyników w chmurze:", e);
+      }
+    }
+
+    async function loadUserDataFromCloud() {
+      if (!currentUser || !window.fbDb) return;
+      try {
+        const { doc, getDoc } = window.fbMethods;
+        const userRef = doc(window.fbDb, "users", currentUser.uid);
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists() && docSnap.data().history) {
+          history = docSnap.data().history;
+        }
+      } catch (e) {
+        console.error("Błąd pobierania wyników z chmury:", e);
+      }
     }
 
     function updateControlsVisibility() {
@@ -1224,6 +1431,108 @@
     }
 
     function setupEventListeners() {
+      accountBtn.addEventListener('click', () => {
+        playClickSound();
+        authError.style.display = 'none';
+        authSuccess.style.display = 'none';
+        authModal.classList.add('open');
+      });
+
+      closeAuthBtn.addEventListener('click', () => {
+        playClickSound();
+        authModal.classList.remove('open');
+      });
+
+      loginBtn.addEventListener('click', async () => {
+        playClickSound();
+        authError.style.display = 'none';
+        authSuccess.style.display = 'none';
+        try {
+          const { signInWithEmailAndPassword } = window.fbMethods;
+          await signInWithEmailAndPassword(window.fbAuth, authEmail.value, authPassword.value);
+          authModal.classList.remove('open');
+          authEmail.value = '';
+          authPassword.value = '';
+        } catch (err) {
+          authError.textContent = "Błąd logowania: " + err.message;
+          authError.style.display = 'block';
+        }
+      });
+
+      registerBtn.addEventListener('click', async () => {
+        playClickSound();
+        authError.style.display = 'none';
+        authSuccess.style.display = 'none';
+        try {
+          const { createUserWithEmailAndPassword } = window.fbMethods;
+          await createUserWithEmailAndPassword(window.fbAuth, authEmail.value, authPassword.value);
+          authModal.classList.remove('open');
+          authEmail.value = '';
+          authPassword.value = '';
+        } catch (err) {
+          authError.textContent = "Błąd rejestracji: " + err.message;
+          authError.style.display = 'block';
+        }
+      });
+
+      forgotPasswordBtn.addEventListener('click', async () => {
+        playClickSound();
+        authError.style.display = 'none';
+        authSuccess.style.display = 'none';
+
+        const emailVal = authEmail.value.trim();
+        if (!emailVal) {
+          authError.textContent = "Wpisz swój e-mail w polu powyżej, aby móc zresetować hasło.";
+          authError.style.display = 'block';
+          return;
+        }
+
+        try {
+          const { sendPasswordResetEmail } = window.fbMethods;
+          await sendPasswordResetEmail(window.fbAuth, emailVal);
+          authSuccess.textContent = "Instrukcje resetowania hasła zostały wysłane na podany adres e-mail!";
+          authSuccess.style.display = 'block';
+        } catch (err) {
+          authError.textContent = "Nie udało się wysłać linku: " + err.message;
+          authError.style.display = 'block';
+        }
+      });
+
+      logoutBtn.addEventListener('click', async () => {
+        playClickSound();
+        try {
+          const { signOut } = window.fbMethods;
+          await signOut(window.fbAuth);
+          authModal.classList.remove('open');
+        } catch (err) {
+          console.error(err);
+        }
+      });
+
+      deleteAccountBtn.addEventListener('click', async () => {
+        playClickSound();
+        if (!currentUser) return;
+
+        const confirmDelete = confirm("Czy na pewno chcesz usunąć swoje konto? Wszystkie Twoje zapisane wyniki zostaną bezpowrotnie usunięte.");
+        if (!confirmDelete) return;
+
+        try {
+          const { doc, deleteDoc, deleteUser } = window.fbMethods;
+          
+          if (window.fbDb) {
+            const userRef = doc(window.fbDb, "users", currentUser.uid);
+            await deleteDoc(userRef);
+          }
+
+          await deleteUser(currentUser);
+          
+          alert("Twoje konto zostało pomyślnie usunięte.");
+          authModal.classList.remove('open');
+        } catch (err) {
+          alert("Wystąpił błąd podczas usuwania konta. Jeśli nie logowałeś się od dłuższego czasu, zaloguj się ponownie i spróbuj jeszcze raz.\n\n" + err.message);
+        }
+      });
+
       soundToggleBtn.addEventListener('click', () => {
         isSoundEnabled = !isSoundEnabled;
         if (isSoundEnabled) {
@@ -1290,7 +1599,6 @@
         }
       });
 
-      // Handle On-Screen Keyboard Clicks (zabezpieczone przed zdarzeniami touchstart + click)
       document.querySelectorAll('.kb-key').forEach(keyBtn => {
         keyBtn.addEventListener('touchend', (e) => {
           e.preventDefault();
@@ -1305,17 +1613,13 @@
         });
       });
 
-      // Handle Physical Keyboard Input cleanly via single event listener
       physicalKeyboardInput.addEventListener('input', () => {
         if (currentMode !== 'readbraille') return;
         
         let enteredText = physicalKeyboardInput.value.toUpperCase();
         if (enteredText.length === 0) return;
 
-        // Pobierz ostatni wpisany znak
         const lastTypedChar = enteredText.slice(-1);
-        
-        // Natychmiast zresetuj pole tekstowe do aktualnego postępu (zapobiega fizycznemu powielaniu znaków)
         physicalKeyboardInput.value = currentTask.slice(0, currentIndex).join('');
 
         const targetLetter = currentTask[currentIndex];
@@ -1324,7 +1628,6 @@
         if (lastTypedChar === targetLetter) {
           handleCharacterInput(lastTypedChar);
         } else {
-          // Błędna litera
           physicalKeyboardInput.value = currentTask.slice(0, currentIndex).join('') + lastTypedChar;
           physicalKeyboardInput.classList.add('error');
           setTimeout(() => {
@@ -1377,6 +1680,10 @@
 
       cheatSheetModal.addEventListener('click', (e) => {
         if (e.target === cheatSheetModal) cheatSheetModal.classList.remove('open');
+      });
+
+      authModal.addEventListener('click', (e) => {
+        if (e.target === authModal) authModal.classList.remove('open');
       });
 
       window.addEventListener('mousedown', () => { 
@@ -1492,7 +1799,6 @@
     }
 
     function handleCharacterInput(char) {
-      // Blokada szybkiego podwójnego kliknięcia (poniżej 150 ms)
       const now = Date.now();
       if (now - lastKeyTime < 150) return;
       lastKeyTime = now;
@@ -1625,7 +1931,7 @@
           if (currentMode === 'timetrial') {
             stopTimer();
             const finalTime = ((Date.now() - startTime) / 1000).toFixed(1);
-            saveScore(finalTime);
+            saveScoreToCloud(finalTime);
             loadNewTask();
           } else {
             loadNewTask();
@@ -1650,16 +1956,11 @@
       clearInterval(timerInterval);
     }
 
-    function saveScore(time) {
-      history.unshift(parseFloat(time));
-      if (history.length > 10) history.pop();
-    }
-
     function showHistory() {
       historyList.innerHTML = '';
       if (history.length === 0) {
         bestScoreBanner.textContent = 'Best: --';
-        historyList.innerHTML = '<li class="history-item" style="color: #888;">Brak wyników w historii.</li>';
+        historyList.innerHTML = '<li class="history-item" style="color: #888;">Brak wyników. Zaloguj się, aby zapisać.</li>';
       } else {
         const bestTime = Math.min(...history);
         bestScoreBanner.textContent = `Best: ${bestTime.toFixed(1)}s`;
